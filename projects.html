@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projets H-Lab - Innovation IoT & Technologies</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tech-blue': '#0066FF',
+                        'tech-cyan': '#00FFFF',
+                        'tech-dark': '#0A0F1C',
+                        'tech-gray': '#1A1F2E'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'circuit': 'circuit 4s linear infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes circuit {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(0, 102, 255, 0.3); }
+            to { box-shadow: 0 0 30px rgba(0, 255, 255, 0.5); }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .tech-gradient {
+            background: linear-gradient(135deg, #0066FF 0%, #00FFFF 100%);
+        }
+        .tech-glow {
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.3);
+        }
+        .hero-bg {
+            background: radial-gradient(ellipse at center, rgba(0, 102, 255, 0.1) 0%, rgba(10, 15, 28, 1) 70%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 102, 255, 0.2);
+        }
+        .project-card {
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 102, 255, 0.2);
+        }
+        .modal {
+            backdrop-filter: blur(10px);
+        }
+        .filter-btn.active {
+            background: linear-gradient(135deg, #0066FF 0%, #00FFFF 100%);
+            color: white;
+        }
+        .status-badge {
+            position: relative;
+            overflow: hidden;
+        }
+        .status-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .status-badge:hover::before {
+            left: 100%;
+        }
+        .video-container {
+            position: relative;
+            background: linear-gradient(45deg, rgba(0, 102, 255, 0.1), rgba(0, 255, 255, 0.1));
+        }
+        .video-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body class="bg-tech-dark text-white overflow-x-hidden">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-tech-dark/80 backdrop-blur-md border-b border-tech-blue/20">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-2xl font-bold tech-gradient bg-clip-text text-transparent">
+                    <a href="index.html">H-Lab</a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="hover:text-tech-cyan transition-colors">Accueil</a>
+                    <a href="a-propos.html" class="hover:text-tech-cyan transition-colors">À propos</a>
+                    <a href="projects.html" class="hover:text-tech-cyan transition-colors">Projets</a>
+                    <a href="contact.html" class="text-tech-cyan">Contact</a>
+                </div>
+                <button class="md:hidden text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="projets" class="min-h-screen flex items-center justify-center hero-bg relative overflow-hidden pt-20">
+        <!-- Animated Background -->
+        <div class="absolute inset-0">
+            <svg class="w-full h-full opacity-10" viewBox="0 0 1000 1000">
+                <defs>
+                    <linearGradient id="projectGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#0066FF"/>
+                        <stop offset="50%" style="stop-color:#00FFFF"/>
+                        <stop offset="100%" style="stop-color:#0066FF"/>
+                    </linearGradient>
+                </defs>
+                <g class="animate-pulse-slow">
+                    <circle cx="200" cy="200" r="100" stroke="url(#projectGrad)" stroke-width="2" fill="none"/>
+                    <circle cx="800" cy="300" r="150" stroke="url(#projectGrad)" stroke-width="2" fill="none"/>
+                    <circle cx="400" cy="700" r="80" stroke="url(#projectGrad)" stroke-width="2" fill="none"/>
+                    <circle cx="700" cy="800" r="120" stroke="url(#projectGrad)" stroke-width="2" fill="none"/>
+                </g>
+                <path d="M100,500 Q300,200 500,500 T900,500" stroke="url(#projectGrad)" stroke-width="3" fill="none" stroke-dasharray="20,10" class="animate-circuit"/>
+            </svg>
+        </div>
+
+        <div class="container mx-auto px-6 text-center relative z-10">
+            <div class="hero-content opacity-0">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                    Nos <span class="tech-gradient bg-clip-text text-transparent">Projets</span><br>
+                    Innovants
+                </h1>
+                <p class="text-xl md:text-2xl mb-12 text-gray-300 max-w-3xl mx-auto">
+                    Découvrez nos réalisations technologiques qui façonnent l'avenir de l'IoT. 
+                    De la conception à la mise en production, chaque projet reflète notre expertise et notre passion pour l'innovation.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <button onclick="scrollToProjects()" class="px-8 py-4 bg-gradient-to-r from-tech-blue to-tech-cyan text-white font-semibold rounded-full hover:scale-105 transition-transform tech-glow">
+                        Explorer nos projets
+                    </button>
+                    <button onclick="filterProjects('en-cours')" class="px-8 py-4 border-2 border-tech-blue text-tech-blue font-semibold rounded-full hover:bg-tech-blue hover:text-white transition-all">
+                        Projets en cours
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-20 bg-tech-gray">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="text-center stats-card opacity-0">
+                    <div class="text-4xl font-bold tech-gradient bg-clip-text text-transparent mb-2 counter" data-target="127">0</div>
+                    <h3 class="text-lg font-semibold mb-1">Projets Réalisés</h3>
+                    <p class="text-gray-400 text-sm">Solutions déployées</p>
+                </div>
+                <div class="text-center stats-card opacity-0">
+                    <div class="text-4xl font-bold tech-gradient bg-clip-text text-transparent mb-2 counter" data-target="23">0</div>
+                    <h3 class="text-lg font-semibold mb-1">En Développement</h3>
+                    <p class="text-gray-400 text-sm">Projets actifs</p>
+                </div>
+                <div class="text-center stats-card opacity-0">
+                    <div class="text-4xl font-bold tech-gradient bg-clip-text text-transparent mb-2 counter" data-target="8">0</div>
+                    <h3 class="text-lg font-semibold mb-1">Domaines Tech</h3>
+                    <p class="text-gray-400 text-sm">Expertises couvertes</p>
+                </div>
+                <div class="text-center stats-card opacity-0">
+                    <div class="text-4xl font-bold tech-gradient bg-clip-text text-transparent mb-2 counter" data-target="95">0</div>
+                    <h3 class="text-lg font-semibold mb-1">Taux de Réussite</h3>
+                    <p class="text-gray-400 text-sm">Projets livrés</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters Section -->
+    <section class="py-12 bg-tech-dark">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <button onclick="filterProjects('tous')" class="filter-btn active px-6 py-3 rounded-full border-2 border-tech-blue text-tech-blue font-semibold transition-all hover:scale-105">
+                    Tous les projets
+                </button>
+                <button onclick="filterProjects('realise')" class="filter-btn px-6 py-3 rounded-full border-2 border-tech-blue text-tech-blue font-semibold transition-all hover:scale-105">
+                    Réalisés
+                </button>
+                <button onclick="filterProjects('en-cours')" class="filter-btn px-6 py-3 rounded-full border-2 border-tech-blue text-tech-blue font-semibold transition-all hover:scale-105">
+                    En cours
+                </button>
+                <button onclick="filterProjects('iot')" class="filter-btn px-6 py-3 rounded-full border-2 border-tech-blue text-tech-blue font-semibold transition-all hover:scale-105">
+                    IoT
+                </button>
+                <button onclick="filterProjects('electronique')" class="filter-btn px-6 py-3 rounded-full border-2 border-tech-blue text-tech-blue font-semibold transition-all hover:scale-105">
+                    Électronique
+                </button>
+                <button onclick="filterProjects('developpement')" class="filter-btn px-6 py-3 rounded-full border-2 border-tech-blue text-tech-blue font-semibold transition-all hover:scale-105">
+                    Développement
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <section class="py-20 bg-tech-dark">
+        <div class="container mx-auto px-6">
+            <div id="projects-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Projet 1: SmartCity Sensors -->
+                <div class="project-card card-hover bg-tech-gray/50 rounded-2xl overflow-hidden opacity-0" data-status="realise" data-category="iot">
+                    <div class="relative">
+                        <div class="video-container aspect-video bg-gradient-to-br from-tech-blue/20 to-tech-cyan/20 flex items-center justify-center">
+                            <button onclick="openProjectModal('smartcity')" class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center hover:scale-110 transition-transform backdrop-blur-sm">
+                                <svg class="w-8 h-8 ml-1 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <span class="status-badge bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                Réalisé
+                            </span>
+                        </div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-tech-blue/80 text-white px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm">
+                                IoT
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">SmartCity Sensors</h3>
+                        <p class="text-gray-400 mb-4 text-sm">
+                            Réseau de capteurs intelligents pour la surveillance environnementale urbaine en temps réel.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-2">
+                                <span class="w-3 h-3 bg-tech-cyan rounded-full animate-pulse"></span>
+                                <span class="text-sm text-gray-500">Déployé</span>
+                            </div>
+                            <button onclick="openProjectModal('smartcity')" class="text-tech-cyan hover:text-white transition-colors">
+                                Voir détails →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projet 2: Industrial IoT Platform -->
+                <div class="project-card card-hover bg-tech-gray/50 rounded-2xl overflow-hidden opacity-0" data-status="en-cours" data-category="developpement">
+                    <div class="relative">
+                        <div class="video-container aspect-video bg-gradient-to-br from-tech-blue/20 to-tech-cyan/20 flex items-center justify-center">
+                            <button onclick="openProjectModal('industrial')" class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center hover:scale-110 transition-transform backdrop-blur-sm">
+                                <svg class="w-8 h-8 ml-1 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <span class="status-badge bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold animate-pulse">
+                                En cours
+                            </span>
+                        </div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-purple-500/80 text-white px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm">
+                                Développement
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">Industrial IoT Platform</h3>
+                        <p class="text-gray-400 mb-4 text-sm">
+                            Plateforme de gestion centralisée pour l'industrie 4.0 avec analytics avancés.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-2">
+                                <span class="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></span>
+                                <span class="text-sm text-gray-500">75% complété</span>
+                            </div>
+                            <button onclick="openProjectModal('industrial')" class="text-tech-cyan hover:text-white transition-colors">
+                                Voir détails →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projet 3: Smart Home Hub -->
+                <div class="project-card card-hover bg-tech-gray/50 rounded-2xl overflow-hidden opacity-0" data-status="realise" data-category="electronique">
+                    <div class="relative">
+                        <div class="video-container aspect-video bg-gradient-to-br from-tech-blue/20 to-tech-cyan/20 flex items-center justify-center">
+                            <button onclick="openProjectModal('smarthome')" class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center hover:scale-110 transition-transform backdrop-blur-sm">
+                                <svg class="w-8 h-8 ml-1 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <span class="status-badge bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                Réalisé
+                            </span>
+                        </div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-yellow-500/80 text-white px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm">
+                                Électronique
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">Smart Home Hub</h3>
+                        <p class="text-gray-400 mb-4 text-sm">
+                            Hub central pour la domotique avec contrôle vocal et intelligence artificielle.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-2">
+                                <span class="w-3 h-3 bg-tech-cyan rounded-full animate-pulse"></span>
+                                <span class="text-sm text-gray-500">Commercialisé</span>
+                            </div>
+                            <button onclick="openProjectModal('smarthome')" class="text-tech-cyan hover:text-white transition-colors">
+                                Voir détails →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projet 4: Agricultural Monitoring -->
+                <div class="project-card card-hover bg-tech-gray/50 rounded-2xl overflow-hidden opacity-0" data-status="realise" data-category="iot">
+                    <div class="relative">
+                        <div class="video-container aspect-video bg-gradient-to-br from-tech-blue/20 to-tech-cyan/20 flex items-center justify-center">
+                            <button onclick="openProjectModal('agriculture')" class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center hover:scale-110 transition-transform backdrop-blur-sm">
+                                <svg class="w-8 h-8 ml-1 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <span class="status-badge bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                Réalisé
+                            </span>
+                        </div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-tech-blue/80 text-white px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm">
+                                IoT
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">Agricultural Monitoring</h3>
+                        <p class="text-gray-400 mb-4 text-sm">
+                            Système de surveillance agricole intelligent pour optimiser les rendements.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-2">
+                                <span class="w-3 h-3 bg-tech-cyan rounded-full animate-pulse"></span>
+                                <span class="text-sm text-gray-500">Déployé</span>
+                            </div>
+                            <button onclick="openProjectModal('agriculture')" class="text-tech-cyan hover:text-white transition-colors">
+                                Voir détails →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projet 5: Blockchain IoT Security -->
+                <div class="project-card card-hover bg-tech-gray/50 rounded-2xl overflow-hidden opacity-0" data-status="en-cours" data-category="developpement">
+                    <div class="relative">
+                        <div class="video-container aspect-video bg-gradient-to-br from-tech-blue/20 to-tech-cyan/20 flex items-center justify-center">
+                            <button onclick="openProjectModal('blockchain')" class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center hover:scale-110 transition-transform backdrop-blur-sm">
+                                <svg class="w-8 h-8 ml-1 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <span class="status-badge bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold animate-pulse">
+                                En cours
+                            </span>
+                        </div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-purple-500/80 text-white px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm">
+                                Développement
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">Blockchain IoT Security</h3>
+                        <p class="text-gray-400 mb-4 text-sm">
+                            Solution de sécurité blockchain pour l'authentification des dispositifs IoT.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-2">
+                                <span class="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></span>
+                                <span class="text-sm text-gray-500">60% complété</span>
+                            </div>
+                            <button onclick="openProjectModal('blockchain')" class="text-tech-cyan hover:text-white transition-colors">
+                                Voir détails →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projet 6: Wearable Health Monitor -->
+                <div class="project-card card-hover bg-tech-gray/50 rounded-2xl overflow-hidden opacity-0" data-status="en-cours" data-category="electronique">
+                    <div class="relative">
+                        <div class="video-container aspect-video bg-gradient-to-br from-tech-blue/20 to-tech-cyan/20 flex items-center justify-center">
+                            <button onclick="openProjectModal('wearable')" class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center hover:scale-110 transition-transform backdrop-blur-sm">
+                                <svg class="w-8 h-8 ml-1 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <span class="status-badge bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold animate-pulse">
+                                En cours
+                            </span>
+                        </div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-yellow-500/80 text-white px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm">
+                                Électronique
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">Wearable Health Monitor</h3>
+                        <p class="text-gray-400 mb-4 text-sm">
+                            Dispositif portable pour le monitoring continu des signes vitaux.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-2">
+                                <span class="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></span>
+                                <span class="text-sm text-gray-500">85% complété</span>
+                            </div>
+                            <button onclick="openProjectModal('wearable')" class="text-tech-cyan hover:text-white transition-colors">
+                                Voir détails →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Modal -->
+    <div id="project-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="modal bg-tech-gray rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 id="modal-title" class="text-3xl font-bold mb-2"></h2>
+                        <div class="flex space-x-3">
+                            <span id="modal-category" class="px-3 py-1 rounded-full text-sm font-semibold"></span>
+                            <span id="modal-status" class="px-3 py-1 rounded-full text-sm font-semibold"></span>
+                        </div>
+                    </div>
+                    <button onclick="closeProjectModal()" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <div id="modal-video" class="aspect-video bg-black rounded-lg mb-6 flex items-center justify-center">
+                            <div class="text-center">
+                                <svg class="w-16 h-16 mx-auto mb-4 text-tech-cyan" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                                <p class="text-gray-400">Vidéo de démonstration</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold mb-2">Technologies utilisées</h4>
+                                <div id="modal-technologies" class="flex flex-wrap gap-2"></div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-semibold mb-2">Équipe</h4>
+                                <div id="modal-team" class="text-gray-400"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="font-semibold mb-3">Description du projet</h4>
+                                <p id="modal-description" class="text-gray-400 leading-relaxed"></p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-semibold mb-3">Objectifs</h4>
+                                <ul id="modal-objectives" class="space-y-2 text-gray-400"></ul>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-semibold mb-3">Résultats</h4>
+                                <div id="modal-results" class="space-y-2 text-gray-400"></div>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-gray-700">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="text-sm text-gray-500">Durée du projet</p>
+                                        <p id="modal-duration" class="font-semibold"></p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm text-gray-500">Budget</p>
+                                        <p id="modal-budget" class="font-semibold"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-tech-gray py-16">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-12">
+                <div class="md:col-span-2">
+                    <div class="text-3xl font-bold tech-gradient bg-clip-text text-transparent mb-6">
+                        H-Lab
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-md">
+                        Chaque projet est une nouvelle aventure technologique. Découvrez comment nous transformons les idées en innovations concrètes.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-tech-blue rounded-full flex items-center justify-center hover:bg-tech-cyan transition-colors">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-tech-blue rounded-full flex items-center justify-center hover:bg-tech-cyan transition-colors">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-tech-blue rounded-full flex items-center justify-center hover:bg-tech-cyan transition-colors">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-6">Navigation</h3>
+                    <ul class="space-y-3">
+                        <li><a href="index.html" class="text-gray-400 hover:text-tech-cyan transition-colors">Accueil</a></li>
+                        <li><a href="#projets" class="text-gray-400 hover:text-tech-cyan transition-colors">Projets</a></li>
+                        <li><a href="index.html#services" class="text-gray-400 hover:text-tech-cyan transition-colors">Services</a></li>
+                        <li><a href="index.html#formations" class="text-gray-400 hover:text-tech-cyan transition-colors">Formations</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-6">Contact</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-gray-400">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Paris, France
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            projets@h-lab.fr
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-12 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-400 text-sm">© 2024 H-Lab. Tous droits réservés.</p>
+                    <p class="text-gray-400 text-sm mt-4 md:mt-0">Innovation • Technologie • Excellence</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Project data
+        const projectData = {
+            smartcity: {
+                title: "SmartCity Sensors",
+                category: "IoT",
+                status: "Réalisé",
+                description: "Un réseau complet de capteurs intelligents déployé dans plusieurs villes pour surveiller la qualité de l'air, le niveau sonore, la température et l'humidité en temps réel. Cette solution permet aux municipalités de prendre des décisions éclairées pour améliorer la qualité de vie urbaine.",
+                objectives: [
+                    "Surveillance environnementale en temps réel",
+                    "Réduction de la pollution urbaine",
+                    "Optimisation des services municipaux",
+                    "Amélioration de la qualité de vie"
+                ],
+                results: [
+                    "Déploiement dans 5 villes",
+                    "Réduction de 25% des émissions polluantes",
+                    "Interface de monitoring en temps réel",
+                    "Alertes automatiques pour les autorités"
+                ],
+                technologies: ["LoRaWAN", "Node.js", "MongoDB", "React", "AWS IoT"],
+                team: "6 ingénieurs • 18 mois",
+                duration: "18 mois",
+                budget: "450K€"
+            },
+            industrial: {
+                title: "Industrial IoT Platform",
+                category: "Développement",
+                status: "En cours",
+                description: "Plateforme complète de gestion IoT pour l'industrie 4.0, intégrant l'analytics prédictif, la maintenance préventive et l'optimisation des processus de production. Cette solution révolutionne la façon dont les industries gèrent leurs équipements.",
+                objectives: [
+                    "Digitalisation des processus industriels",
+                    "Maintenance prédictive intelligente",
+                    "Optimisation de la production",
+                    "Réduction des coûts opérationnels"
+                ],
+                results: [
+                    "Architecture microservices scalable",
+                    "Dashboard analytics en temps réel",
+                    "Algorithmes de machine learning",
+                    "API REST complète"
+                ],
+                technologies: ["Python", "TensorFlow", "Kubernetes", "PostgreSQL", "Grafana"],
+                team: "8 développeurs • 24 mois",
+                duration: "24 mois",
+                budget: "680K€"
+            },
+            smarthome: {
+                title: "Smart Home Hub",
+                category: "Électronique",
+                status: "Réalisé",
+                description: "Hub central intelligent pour la domotique moderne, intégrant contrôle vocal, intelligence artificielle et compatibilité avec tous les protocoles IoT. Ce dispositif révolutionne l'expérience de la maison connectée.",
+                objectives: [
+                    "Centralisation de la domotique",
+                    "Interface utilisateur intuitive",
+                    "Compatibilité universelle",
+                    "Sécurité renforcée"
+                ],
+                results: [
+                    "Produit commercialisé",
+                    "5000+ unités vendues",
+                    "Note client 4.8/5",
+                    "Certification CE et FCC"
+                ],
+                technologies: ["ARM Cortex", "Zigbee", "WiFi 6", "Bluetooth 5.0", "Edge AI"],
+                team: "4 ingénieurs hardware • 12 mois",
+                duration: "12 mois",
+                budget: "320K€"
+            },
+            agriculture: {
+                title: "Agricultural Monitoring",
+                category: "IoT",
+                status: "Réalisé",
+                description: "Système complet de surveillance agricole utilisant des capteurs IoT pour optimiser l'irrigation, surveiller la santé des cultures et prédire les rendements. Cette solution aide les agriculteurs à maximiser leur productivité tout en préservant les ressources.",
+                objectives: [
+                    "Optimisation de l'irrigation",
+                    "Surveillance de la santé des cultures",
+                    "Prédiction des rendements",
+                    "Économie d'eau et d'énergie"
+                ],
+                results: [
+                    "Déployé sur 200+ exploitations",
+                    "Économie d'eau de 30%",
+                    "Augmentation des rendements de 15%",
+                    "ROI de 18 mois"
+                ],
+                technologies: ["LoRa", "Solar Power", "Machine Learning", "Weather API", "Mobile App"],
+                team: "5 ingénieurs • 15 mois",
+                duration: "15 mois",
+                budget: "380K€"
+            },
+            blockchain: {
+                title: "Blockchain IoT Security",
+                category: "Développement",
+                status: "En cours",
+                description: "Solution révolutionnaire de sécurité basée sur la blockchain pour l'authentification et la protection des dispositifs IoT. Cette plateforme garantit l'intégrité et la traçabilité de toutes les communications IoT.",
+                objectives: [
+                    "Sécurisation des communications IoT",
+                    "Authentification décentralisée",
+                    "Traçabilité des données",
+                    "Protection contre les cyberattaques"
+                ],
+                results: [
+                    "Prototype fonctionnel",
+                    "Tests de sécurité validés",
+                    "Partenariat avec 3 entreprises",
+                    "Brevet en cours de dépôt"
+                ],
+                technologies: ["Ethereum", "Solidity", "IPFS", "Web3.js", "Hyperledger"],
+                team: "6 développeurs blockchain • 20 mois",
+                duration: "20 mois",
+                budget: "520K€"
+            },
+            wearable: {
+                title: "Wearable Health Monitor",
+                category: "Électronique",
+                status: "En cours",
+                description: "Dispositif portable de nouvelle génération pour le monitoring continu des signes vitaux, intégrant des capteurs avancés et l'intelligence artificielle pour la détection précoce d'anomalies de santé.",
+                objectives: [
+                    "Monitoring continu des signes vitaux",
+                    "Détection précoce d'anomalies",
+                    "Interface médicale professionnelle",
+                    "Autonomie de 7 jours"
+                ],
+                results: [
+                    "Prototype avancé fonctionnel",
+                    "Validation clinique en cours",
+                    "Certification médicale CE",
+                    "Partenariat avec hôpitaux"
+                ],
+                technologies: ["ARM M4", "Bluetooth LE", "PPG Sensors", "ECG", "Machine Learning"],
+                team: "7 ingénieurs biomédicaux • 18 mois",
+                duration: "18 mois",
+                budget: "420K€"
+            }
+        };
+
+        // Hero Animation
+        gsap.set('.hero-content', { opacity: 0, y: 50 });
+        gsap.to('.hero-content', { 
+            opacity: 1, 
+            y: 0, 
+            duration: 1.5, 
+            ease: 'power2.out',
+            delay: 0.5 
+        });
+
+        // Stats Animation
+        gsap.set('.stats-card', { opacity: 0, y: 30 });
+        ScrollTrigger.batch('.stats-card', {
+            onEnter: (elements) => {
+                gsap.to(elements, {
+                    opacity: 1,
+                    y: 0,
+                    stagger: 0.1,
+                    duration: 0.8,
+                    ease: 'power2.out'
+                });
+                
+                elements.forEach(card => {
+                    const counter = card.querySelector('.counter');
+                    const target = parseInt(counter.dataset.target);
+                    let current = 0;
+                    
+                    const increment = target / 50;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        counter.textContent = Math.floor(current);
+                    }, 30);
+                });
+            },
+            start: 'top 80%'
+        });
+
+        // Project Cards Animation
+        gsap.set('.project-card', { opacity: 0, y: 50 });
+        ScrollTrigger.batch('.project-card', {
+            onEnter: (elements) => {
+                gsap.to(elements, {
+                    opacity: 1,
+                    y: 0,
+                    stagger: 0.15,
+                    duration: 0.8,
+                    ease: 'power2.out'
+                });
+            },
+            start: 'top 80%'
+        });
+
+        // Filter Functions
+        function filterProjects(category) {
+            const cards = document.querySelectorAll('.project-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            // Update active button
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            cards.forEach(card => {
+                const cardStatus = card.dataset.status;
+                const cardCategory = card.dataset.category;
+                
+                if (category === 'tous' || 
+                    category === cardStatus || 
+                    category === cardCategory) {
+                    gsap.to(card, { opacity: 1, scale: 1, duration: 0.3 });
+                    card.style.display = 'block';
+                } else {
+                    gsap.to(card, { 
+                        opacity: 0, 
+                        scale: 0.8, 
+                        duration: 0.3,
+                        onComplete: () => {
+                            card.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        }
+
+        // Modal Functions
+        function openProjectModal(projectId) {
+            const modal = document.getElementById('project-modal');
+            const data = projectData[projectId];
+            
+            if (!data) return;
+            
+            // Populate modal content
+            document.getElementById('modal-title').textContent = data.title;
+            document.getElementById('modal-description').textContent = data.description;
+            document.getElementById('modal-duration').textContent = data.duration;
+            document.getElementById('modal-budget').textContent = data.budget;
+            document.getElementById('modal-team').textContent = data.team;
+            
+            // Set category and status
+            const categoryEl = document.getElementById('modal-category');
+            const statusEl = document.getElementById('modal-status');
+            
+            categoryEl.textContent = data.category;
+            statusEl.textContent = data.status;
+            
+            // Set category colors
+            const categoryColors = {
+                'IoT': 'bg-tech-blue/80',
+                'Développement': 'bg-purple-500/80',
+                'Électronique': 'bg-yellow-500/80'
+            };
+            
+            const statusColors = {
+                'Réalisé': 'bg-green-500',
+                'En cours': 'bg-orange-500'
+            };
+            
+            categoryEl.className = `px-3 py-1 rounded-full text-sm font-semibold text-white ${categoryColors[data.category]}`;
+            statusEl.className = `px-3 py-1 rounded-full text-sm font-semibold text-white ${statusColors[data.status]}`;
+            
+            // Populate objectives
+            const objectivesList = document.getElementById('modal-objectives');
+            objectivesList.innerHTML = data.objectives.map(obj => 
+                `<li class="flex items-center"><span class="w-2 h-2 bg-tech-cyan rounded-full mr-3"></span>${obj}</li>`
+            ).join('');
+            
+            // Populate results
+            const resultsList = document.getElementById('modal-results');
+            resultsList.innerHTML = data.results.map(result => 
+                `<div class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>${result}</div>`
+            ).join('');
+            
+            // Populate technologies
+            const techList = document.getElementById('modal-technologies');
+            techList.innerHTML = data.technologies.map(tech => 
+                `<span class="px-3 py-1 bg-tech-blue/20 text-tech-cyan rounded-full text-sm">${tech}</span>`
+            ).join('');
+            
+            // Show modal with animation
+            modal.classList.remove('hidden');
+            gsap.fromTo(modal.querySelector('.modal'), 
+                { opacity: 0, scale: 0.8, y: 50 },
+                { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: 'power2.out' }
+            );
+        }
+
+        function closeProjectModal() {
+            const modal = document.getElementById('project-modal');
+            gsap.to(modal.querySelector('.modal'), {
+                opacity: 0,
+                scale: 0.8,
+                y: 50,
+                duration: 0.3,
+                ease: 'power2.in',
+                onComplete: () => {
+                    modal.classList.add('hidden');
+                }
+            });
+        }
+
+        // Utility Functions
+        function scrollToProjects() {
+            document.getElementById('projects-grid').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Smooth Scrolling for Navigation Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('project-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProjectModal();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeProjectModal();
+            }
+        });
+    </script>
+</body>
+</html>
