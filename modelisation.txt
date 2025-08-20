@@ -1,0 +1,93 @@
+Admin :
+- id (PK)
+- nom
+- prenom
+- email (unique)
+- password (hashé)
+- date_creation
+
+Video Presentation :
+- id (PK)
+- titre
+- description
+- url_video
+- date_ajout
+- admin_id (FK)
+
+Formation : 
+- id (PK)
+- titre
+- description
+- duree
+- objectifs []
+- prerequis []
+- prix
+- image
+- date_ajout
+- admin_id (FK)
+
+Produit : 
+- id (PK)
+- nom
+- description
+- prix
+- images []
+- caracteristiques []
+- whatsapp_numero
+- categorie
+- disponibilite
+- date_ajout
+- admin_id (FK)
+
+Partenaire :
+- id (PK)
+- nom
+- logo
+- description
+- type (client/partenaire)
+- date_ajout
+- admin_id (FK)
+
+Temoignage :
+- id (PK)
+- nom
+- logo
+- description
+- type (client/partenaire)
+- date_ajout
+- admin_id (FK)
+
+Membre_Equipe :
+- id (PK)
+- nom
+- prenom
+- poste
+- bio
+- photo
+- reseaux_sociaux {
+    linkedin
+    twitter
+    github
+    autres
+  }
+- specialites []
+- date_ajout
+- admin_id (FK)
+
+Projet :
+- id (PK)
+- titre
+- description_courte
+- description_complete
+- image_principale
+- images_gallery []
+- technologies_utilisees []
+- date_realisation
+- client
+- categorie
+- defis []
+- solutions []
+- resultats []
+- lien_demo (optionnel)
+- date_ajout
+- admin_id (FK)
