@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Admin - H-Lab</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tech-blue': '#0066FF',
+                        'tech-cyan': '#00FFFF',
+                        'tech-dark': '#0A0F1C',
+                        'tech-gray': '#1A1F2E'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'circuit': 'circuit 4s linear infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes circuit {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+        .tech-gradient {
+            background: linear-gradient(135deg, #0066FF 0%, #00FFFF 100%);
+        }
+        .tech-glow {
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.3);
+        }
+        .hero-bg {
+            background: radial-gradient(ellipse at center, rgba(0, 102, 255, 0.1) 0%, rgba(10, 15, 28, 1) 70%);
+        }
+        .input-focus {
+            transition: all 0.3s ease;
+        }
+        .input-focus:focus {
+            border-color: #00FFFF;
+            box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-tech-dark text-white min-h-screen flex items-center justify-center hero-bg relative overflow-hidden">
+    <!-- Background Animation -->
+    <div class="absolute inset-0">
+        <svg class="w-full h-full opacity-10" viewBox="0 0 1000 1000">
+            <defs>
+                <linearGradient id="loginGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#0066FF"/>
+                    <stop offset="100%" style="stop-color:#00FFFF"/>
+                </linearGradient>
+            </defs>
+            <circle cx="500" cy="300" r="150" stroke="url(#loginGrad)" stroke-width="2" fill="none" class="animate-pulse-slow"/>
+            <circle cx="300" cy="700" r="100" stroke="url(#loginGrad)" stroke-width="2" fill="none"/>
+            <circle cx="700" cy="600" r="120" stroke="url(#loginGrad)" stroke-width="2" fill="none"/>
+            <path d="M200,500 Q400,300 600,500 T800,500" stroke="url(#loginGrad)" stroke-width="3" fill="none" stroke-dasharray="20,10" class="animate-circuit"/>
+        </svg>
+    </div>
+
+    <!-- Login Form -->
+    <div class="relative z-10 w-full max-w-md">
+        <div class="bg-tech-gray/50 backdrop-blur-md p-8 rounded-2xl border border-tech-blue/20 tech-glow">
+            <div class="text-center mb-8">
+                <div class="text-4xl font-bold tech-gradient bg-clip-text text-transparent mb-2">
+                    H-Lab
+                </div>
+                <h1 class="text-2xl font-bold mb-2">Administration</h1>
+                <p class="text-gray-400">Connectez-vous à votre espace admin</p>
+            </div>
+
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium mb-2">Adresse email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none"
+                        placeholder="admin@h-lab.fr"
+                    >
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium mb-2">Mot de passe</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                        class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none"
+                        placeholder="••••••••"
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full py-3 bg-gradient-to-r from-tech-blue to-tech-cyan text-white font-semibold rounded-lg hover:scale-105 transition-transform tech-glow focus:outline-none focus:ring-4 focus:ring-tech-cyan/30"
+                >
+                    Se connecter
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-400">
+                    Simulation : utilisez n'importe quelle adresse email et mot de passe
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // GSAP Animation
+        gsap.set('.bg-tech-gray\\/50', { opacity: 0, y: 50 });
+        gsap.to('.bg-tech-gray\\/50', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power2.out',
+            delay: 0.5
+        });
+
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Simulation - accept any credentials
+            if (email && password) {
+                // Store login state (in a real app, this would be a JWT token)
+                localStorage.setItem('adminLoggedIn', 'true');
+                localStorage.setItem('adminEmail', email);
+
+                // Redirect to dashboard
+                window.location.href = 'index.html';
+            } else {
+                alert('Veuillez saisir vos identifiants');
+            }
+        });
+
+        // Check if already logged in
+        if (localStorage.getItem('adminLoggedIn') === 'true') {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

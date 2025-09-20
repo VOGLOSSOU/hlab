@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - H-Lab</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tech-blue': '#0066FF',
+                        'tech-cyan': '#00FFFF',
+                        'tech-dark': '#0A0F1C',
+                        'tech-gray': '#1A1F2E'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'circuit': 'circuit 4s linear infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes circuit {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+        .tech-gradient {
+            background: linear-gradient(135deg, #0066FF 0%, #00FFFF 100%);
+        }
+        .tech-glow {
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.3);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 102, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-tech-dark text-white">
+    <!-- Navigation -->
+    <nav class="bg-tech-gray border-b border-tech-blue/20">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="text-2xl font-bold tech-gradient bg-clip-text text-transparent">
+                        H-Lab Admin
+                    </div>
+                    <span class="text-sm text-gray-400">| Dashboard</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-400" id="adminEmail"></span>
+                    <button onclick="logout()" class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">
+                        Déconnexion
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="flex">
+        <aside class="w-64 bg-tech-gray min-h-screen border-r border-tech-blue/20">
+            <nav class="p-6">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="index.html" class="block px-4 py-3 bg-tech-blue/20 text-tech-cyan rounded-lg font-semibold">
+                            📊 Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="videos.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">
+                            🎥 Vidéos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="formations.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">
+                            🎓 Formations
+                        </a>
+                    </li>
+                    <li>
+                        <a href="produits.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">
+                            🛍️ Produits
+                        </a>
+                    </li>
+                    <li>
+                        <a href="partenaires.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">
+                            🤝 Partenaires
+                        </a>
+                    </li>
+                    <li>
+                        <a href="temoignages.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">
+                            💬 Témoignages
+                        </a>
+                    </li>
+                    <li>
+                        <a href="equipe.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">
+                            👥 Équipe
+                        </a>
+                    </li>
+                    <li>
+                        <a href="projets.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">
+                            🚀 Projets
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold mb-2">Dashboard Administrateur</h1>
+                <p class="text-gray-400">Bienvenue dans l'espace de gestion H-Lab</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-tech-gray p-6 rounded-2xl card-hover">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Projets actifs</p>
+                            <p class="text-2xl font-bold text-tech-cyan" id="stats-projets">23</p>
+                        </div>
+                        <div class="w-12 h-12 bg-tech-blue/20 rounded-full flex items-center justify-center">
+                            🚀
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-tech-gray p-6 rounded-2xl card-hover">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Formations</p>
+                            <p class="text-2xl font-bold text-tech-cyan" id="stats-formations">8</p>
+                        </div>
+                        <div class="w-12 h-12 bg-tech-blue/20 rounded-full flex items-center justify-center">
+                            🎓
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-tech-gray p-6 rounded-2xl card-hover">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Produits</p>
+                            <p class="text-2xl font-bold text-tech-cyan" id="stats-produits">12</p>
+                        </div>
+                        <div class="w-12 h-12 bg-tech-blue/20 rounded-full flex items-center justify-center">
+                            🛍️
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-tech-gray p-6 rounded-2xl card-hover">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Équipe</p>
+                            <p class="text-2xl font-bold text-tech-cyan" id="stats-equipe">45</p>
+                        </div>
+                        <div class="w-12 h-12 bg-tech-blue/20 rounded-full flex items-center justify-center">
+                            👥
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-tech-gray p-6 rounded-2xl mb-8">
+                <h2 class="text-xl font-bold mb-4">Actions Rapides</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <a href="projets.html" class="block p-4 bg-tech-blue/10 hover:bg-tech-blue/20 rounded-lg text-center transition-colors">
+                        <div class="text-2xl mb-2">➕</div>
+                        <div class="font-semibold">Nouveau Projet</div>
+                    </a>
+                    <a href="formations.html" class="block p-4 bg-tech-blue/10 hover:bg-tech-blue/20 rounded-lg text-center transition-colors">
+                        <div class="text-2xl mb-2">📚</div>
+                        <div class="font-semibold">Ajouter Formation</div>
+                    </a>
+                    <a href="produits.html" class="block p-4 bg-tech-blue/10 hover:bg-tech-blue/20 rounded-lg text-center transition-colors">
+                        <div class="text-2xl mb-2">🛒</div>
+                        <div class="font-semibold">Nouveau Produit</div>
+                    </a>
+                    <a href="equipe.html" class="block p-4 bg-tech-blue/10 hover:bg-tech-blue/20 rounded-lg text-center transition-colors">
+                        <div class="text-2xl mb-2">👤</div>
+                        <div class="font-semibold">Ajouter Membre</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-tech-gray p-6 rounded-2xl">
+                <h2 class="text-xl font-bold mb-4">Activité Récente</h2>
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-4 p-4 bg-tech-dark/50 rounded-lg">
+                        <div class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                            ✅
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold">Nouveau projet ajouté</p>
+                            <p class="text-sm text-gray-400">Smart Home Hub - il y a 2 heures</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4 p-4 bg-tech-dark/50 rounded-lg">
+                        <div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                            📝
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold">Formation mise à jour</p>
+                            <p class="text-sm text-gray-400">Arduino Avancé - il y a 4 heures</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4 p-4 bg-tech-dark/50 rounded-lg">
+                        <div class="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center">
+                            👥
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold">Nouveau membre équipe</p>
+                            <p class="text-sm text-gray-400">Thomas Rodriguez - il y a 1 jour</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check authentication
+        if (localStorage.getItem('adminLoggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        // Display admin email
+        const adminEmail = localStorage.getItem('adminEmail');
+        if (adminEmail) {
+            document.getElementById('adminEmail').textContent = adminEmail;
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('adminEmail');
+            window.location.href = 'login.html';
+        }
+
+        // GSAP Animations
+        gsap.set('.card-hover', { opacity: 0, y: 20 });
+        gsap.to('.card-hover', {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: 'power2.out'
+        });
+
+        // Load stats (simulated)
+        document.addEventListener('DOMContentLoaded', function() {
+            // In a real app, these would come from API calls
+            // For now, they're static
+        });
+    </script>
+</body>
+</html>
