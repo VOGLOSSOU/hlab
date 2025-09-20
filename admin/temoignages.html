@@ -79,6 +79,22 @@
                 </button>
             </div>
 
+            <!-- Filter Tabs -->
+            <div class="bg-tech-gray rounded-2xl p-6 mb-6">
+                <div class="flex space-x-4">
+                    <button onclick="filterTestimonials('all')" id="filter-all" class="px-4 py-2 bg-tech-blue/20 text-tech-cyan rounded-lg font-semibold">
+                        Tous
+                    </button>
+                    <button onclick="filterTestimonials('approved')" id="filter-approved" class="px-4 py-2 hover:bg-tech-blue/10 rounded-lg transition-colors">
+                        Approuvés
+                    </button>
+                    <button onclick="filterTestimonials('pending')" id="filter-pending" class="px-4 py-2 hover:bg-tech-blue/10 rounded-lg transition-colors relative">
+                        En attente
+                        <span id="pendingCount" class="ml-2 px-2 py-1 bg-orange-500 text-xs rounded-full"></span>
+                    </button>
+                </div>
+            </div>
+
             <!-- Testimonials List -->
             <div class="bg-tech-gray rounded-2xl p-6">
                 <div id="temoignagesList" class="space-y-4">
@@ -143,7 +159,13 @@
                         <label for="type" class="block text-sm font-medium mb-2">Type *</label>
                         <select id="type" name="type" required class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none">
                             <option value="client">Client</option>
-                            <option value="partenaire">Partenaire</option>
+                            <option value="partenaire">Entreprise partenaire</option>
+                            <option value="employe">Employé H-Lab</option>
+                            <option value="stagiaire">Stagiaire</option>
+                            <option value="etudiant">Étudiant</option>
+                            <option value="collaborateur">Collaborateur</option>
+                            <option value="visiteur">Visiteur</option>
+                            <option value="personne-simple">Particulier</option>
                         </select>
                     </div>
 
@@ -181,6 +203,7 @@
     <script>
         let currentTemoignageId = null;
         let deleteTemoignageId = null;
+        let currentFilter = 'all';
 
         // Check authentication
         if (localStorage.getItem('adminLoggedIn') !== 'true') {
@@ -200,32 +223,67 @@
             window.location.href = 'login.html';
         }
 
+        // Filter testimonials
+        function filterTestimonials(filter) {
+            currentFilter = filter;
+
+            // Update active button
+            document.querySelectorAll('[id^="filter-"]').forEach(btn => {
+                btn.classList.remove('bg-tech-blue/20', 'text-tech-cyan');
+                btn.classList.add('hover:bg-tech-blue/10');
+            });
+            document.getElementById(`filter-${filter}`).classList.add('bg-tech-blue/20', 'text-tech-cyan');
+            document.getElementById(`filter-${filter}`).classList.remove('hover:bg-tech-blue/10');
+
+            loadTemoignages();
+        }
+
         // Load testimonials
         function loadTemoignages() {
-            const temoignages = AdminData.get('temoignages');
+            const allTemoignages = AdminData.get('temoignages');
+            let temoignages = allTemoignages;
+
+            // Apply filter
+            if (currentFilter === 'approved') {
+                temoignages = allTemoignages.filter(t => !t.pending_review);
+            } else if (currentFilter === 'pending') {
+                temoignages = allTemoignages.filter(t => t.pending_review);
+            }
+
             const container = document.getElementById('temoignagesList');
 
+            // Update pending count
+            const pendingCount = allTemoignages.filter(t => t.pending_review).length;
+            document.getElementById('pendingCount').textContent = pendingCount > 0 ? pendingCount : '';
+
             if (temoignages.length === 0) {
-                container.innerHTML = '<p class="text-gray-400 text-center py-8">Aucun témoignage trouvé</p>';
+                const filterText = currentFilter === 'all' ? '' : (currentFilter === 'approved' ? ' approuvés' : ' en attente');
+                container.innerHTML = `<p class="text-gray-400 text-center py-8">Aucun témoignage${filterText} trouvé</p>`;
                 return;
             }
 
             container.innerHTML = temoignages.map(temoignage => `
-                <div class="card-hover bg-tech-dark/50 p-6 rounded-2xl">
+                <div class="card-hover bg-tech-dark/50 p-6 rounded-2xl ${temoignage.pending_review ? 'border-l-4 border-orange-500' : ''}">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
                             <div class="flex items-center space-x-3 mb-3">
                                 <h3 class="text-xl font-bold">${temoignage.nom}</h3>
-                                <span class="px-2 py-1 rounded-full text-xs ${temoignage.type === 'client' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'}">
-                                    ${temoignage.type === 'client' ? 'Client' : 'Partenaire'}
+                                <span class="px-2 py-1 rounded-full text-xs ${getTypeColor(temoignage.type)}">
+                                    ${getTypeLabel(temoignage.type)}
                                 </span>
+                                ${temoignage.pending_review ? '<span class="px-2 py-1 rounded-full text-xs bg-orange-500/20 text-orange-400">En attente</span>' : ''}
                             </div>
                             <p class="text-gray-400 mb-3">"${temoignage.description}"</p>
                             <div class="text-sm text-gray-500">
-                                Ajouté le ${formatDate(temoignage.date_ajout)}
+                                ${temoignage.pending_review ? 'Soumis le' : 'Approuvé le'} ${formatDate(temoignage.date_ajout)}
                             </div>
                         </div>
                         <div class="flex space-x-2">
+                            ${temoignage.pending_review ? `
+                                <button onclick="approveTemoignage(${temoignage.id})" class="p-2 text-green-500 hover:bg-green-500/20 rounded-lg transition-colors" title="Approuver">
+                                    ✅
+                                </button>
+                            ` : ''}
                             <button onclick="editTemoignage(${temoignage.id})" class="p-2 text-tech-cyan hover:bg-tech-cyan/20 rounded-lg transition-colors">
                                 ✏️
                             </button>
@@ -242,6 +300,36 @@
         function formatDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('fr-FR');
+        }
+
+        // Get type label
+        function getTypeLabel(type) {
+            const labels = {
+                'client': 'Client',
+                'partenaire': 'Entreprise partenaire',
+                'employe': 'Employé H-Lab',
+                'stagiaire': 'Stagiaire',
+                'etudiant': 'Étudiant',
+                'collaborateur': 'Collaborateur',
+                'visiteur': 'Visiteur',
+                'personne-simple': 'Particulier'
+            };
+            return labels[type] || type;
+        }
+
+        // Get type color
+        function getTypeColor(type) {
+            const colors = {
+                'client': 'bg-blue-500/20 text-blue-400',
+                'partenaire': 'bg-green-500/20 text-green-400',
+                'employe': 'bg-purple-500/20 text-purple-400',
+                'stagiaire': 'bg-orange-500/20 text-orange-400',
+                'etudiant': 'bg-cyan-500/20 text-cyan-400',
+                'collaborateur': 'bg-pink-500/20 text-pink-400',
+                'visiteur': 'bg-indigo-500/20 text-indigo-400',
+                'personne-simple': 'bg-gray-500/20 text-gray-400'
+            };
+            return colors[type] || 'bg-gray-500/20 text-gray-400';
         }
 
         // Open add modal
@@ -303,6 +391,22 @@
         function closeDeleteModal() {
             document.getElementById('deleteModal').classList.add('hidden');
             deleteTemoignageId = null;
+        }
+
+        // Approve testimonial
+        function approveTemoignage(id) {
+            const temoignage = AdminData.getById('temoignages', id);
+            if (temoignage) {
+                // Remove pending_review flag and update date_ajout to approval date
+                const updatedTemoignage = {
+                    ...temoignage,
+                    pending_review: false,
+                    date_ajout: new Date().toISOString().split('T')[0] // Approval date
+                };
+                AdminData.update('temoignages', id, updatedTemoignage);
+                loadTemoignages();
+                showNotification('Témoignage approuvé avec succès', 'success');
+            }
         }
 
         // Form submission
