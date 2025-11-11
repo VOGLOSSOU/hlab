@@ -6,7 +6,6 @@
     <title>Ajouter un Témoignage - H-Lab</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="admin/data.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -60,19 +59,17 @@
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <div class="text-2xl font-bold tech-gradient bg-clip-text text-transparent">
-                    H-Lab
+                    <a href="index.html">H-Lab</a>
                 </div>
                 <div class="hidden md:flex space-x-8">
                     <a href="index.html" class="hover:text-tech-cyan transition-colors">Accueil</a>
                     <a href="a-propos.html" class="hover:text-tech-cyan transition-colors">À propos</a>
                     <a href="projects.html" class="hover:text-tech-cyan transition-colors">Projets</a>
-                    <a href="add-testimony.html" class="hover:text-tech-cyan transition-colors">Témoigner</a>
-                    <a href="contact.html" class="text-tech-cyan">Contact</a>
+                    <a href="add-testimony.html" class="text-tech-cyan">Témoigner</a>
+                    <a href="contact.html" class="hover:text-tech-cyan transition-colors">Contact</a>
                 </div>
                 <button class="md:hidden text-white">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
             </div>
         </div>
@@ -80,20 +77,8 @@
 
     <!-- Hero Section -->
     <section class="min-h-screen flex items-center justify-center hero-bg relative overflow-hidden pt-20">
-        <!-- Circuit Animation Background -->
         <div class="absolute inset-0">
-            <svg class="w-full h-full opacity-20" viewBox="0 0 1000 1000">
-                <defs>
-                    <linearGradient id="testimonyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#0066FF"/>
-                        <stop offset="100%" style="stop-color:#00FFFF"/>
-                    </linearGradient>
-                </defs>
-                <circle cx="200" cy="200" r="100" stroke="url(#testimonyGrad)" stroke-width="2" fill="none" class="animate-pulse-slow"/>
-                <circle cx="800" cy="300" r="80" stroke="url(#testimonyGrad)" stroke-width="2" fill="none"/>
-                <circle cx="600" cy="700" r="120" stroke="url(#testimonyGrad)" stroke-width="2" fill="none"/>
-                <path d="M100,400 Q300,200 500,400 T900,400" stroke="url(#testimonyGrad)" stroke-width="3" fill="none" stroke-dasharray="20,10" class="animate-circuit"/>
-            </svg>
+            <svg class="w-full h-full opacity-20" viewBox="0 0 1000 1000"><defs><linearGradient id="testimonyGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0066FF"/><stop offset="100%" style="stop-color:#00FFFF"/></linearGradient></defs><circle cx="200" cy="200" r="100" stroke="url(#testimonyGrad)" stroke-width="2" fill="none" class="animate-pulse-slow"/><circle cx="800" cy="300" r="80" stroke="url(#testimonyGrad)" stroke-width="2" fill="none"/><circle cx="600" cy="700" r="120" stroke="url(#testimonyGrad)" stroke-width="2" fill="none"/><path d="M100,400 Q300,200 500,400 T900,400" stroke="url(#testimonyGrad)" stroke-width="3" fill="none" stroke-dasharray="20,10" class="animate-circuit"/></svg>
         </div>
 
         <div class="container mx-auto px-6 text-center relative z-10">
@@ -107,84 +92,56 @@
                     dans vos projets d'innovation IoT.
                 </p>
 
-                <!-- Testimony Form -->
-                <div class="bg-tech-gray/50 backdrop-blur-md p-8 rounded-2xl border border-tech-blue/20 tech-glow">
+                <div id="form-container" class="bg-tech-gray/50 backdrop-blur-md p-8 rounded-2xl border border-tech-blue/20 tech-glow">
                     <form id="testimonyForm" class="space-y-6">
                         <div class="grid md:grid-cols-2 gap-6">
                             <div>
-                                <label for="nom" class="block text-sm font-medium mb-2">Votre nom *</label>
-                                <input
-                                    type="text"
-                                    id="nom"
-                                    name="nom"
-                                    required
-                                    class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
-                                    placeholder="Prénom Nom"
-                                >
+                                <label for="nom" class="block text-sm font-medium mb-2 text-left">Votre nom *</label>
+                                <input type="text" id="nom" name="nom" required class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none" placeholder="Prénom Nom">
                             </div>
-
                             <div>
-                                <label for="type" class="block text-sm font-medium mb-2">Vous êtes *</label>
+                                <label for="type" class="block text-sm font-medium mb-2 text-left">Vous êtes *</label>
                                 <select id="type" name="type" required class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none">
                                     <option value="">Choisissez votre profil...</option>
-                                    <option value="client">Client</option>
-                                    <option value="partenaire">Entreprise partenaire</option>
-                                    <option value="employe">Employé H-Lab</option>
-                                    <option value="stagiaire">Stagiaire</option>
-                                    <option value="etudiant">Étudiant</option>
-                                    <option value="collaborateur">Collaborateur</option>
-                                    <option value="visiteur">Visiteur</option>
-                                    <option value="personne-simple">Particulier</option>
+                                    <option value="Client">Client</option>
+                                    <option value="Entreprise partenaire">Entreprise partenaire</option>
+                                    <option value="Employé H-Lab">Employé H-Lab</option>
+                                    <option value="Stagiaire">Stagiaire</option>
+                                    <option value="Étudiant">Étudiant</option>
+                                    <option value="Collaborateur">Collaborateur</option>
+                                    <option value="Visiteur">Visiteur</option>
+                                    <option value="Particulier">Particulier</option>
                                 </select>
                             </div>
                         </div>
-
                         <div>
-                            <label for="description" class="block text-sm font-medium mb-2">Votre témoignage *</label>
-                            <textarea
-                                id="description"
-                                name="description"
-                                rows="6"
-                                required
-                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none resize-none"
-                                placeholder="Racontez-nous votre expérience avec H-Lab..."
-                            ></textarea>
+                            <label for="description" class="block text-sm font-medium mb-2 text-left">Votre témoignage *</label>
+                            <textarea id="description" name="description" rows="6" required class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none resize-none" placeholder="Racontez-nous votre expérience avec H-Lab..."></textarea>
                         </div>
-
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-left">Votre note *</label>
+                            <div id="rating-stars" class="flex items-center space-x-1 text-gray-500 cursor-pointer text-3xl">
+                                <!-- Stars will be generated by JS -->
+                            </div>
+                            <input type="hidden" id="rating" name="rating" value="5">
+                        </div>
                         <div class="flex items-center space-x-3">
-                            <input
-                                type="checkbox"
-                                id="accept_terms"
-                                name="accept_terms"
-                                required
-                                class="w-5 h-5 text-tech-blue bg-tech-gray border-gray-600 rounded focus:ring-tech-cyan"
-                            >
-                            <label for="accept_terms" class="text-sm">
-                                J'accepte que mon témoignage soit publié sur le site H-Lab *
-                            </label>
+                            <input type="checkbox" id="accept_terms" name="accept_terms" required class="w-5 h-5 text-tech-blue bg-tech-gray border-gray-600 rounded focus:ring-tech-cyan">
+                            <label for="accept_terms" class="text-sm">J'accepte que mon témoignage soit publié sur le site H-Lab *</label>
                         </div>
-
-                        <button
-                            type="submit"
-                            class="w-full py-4 bg-gradient-to-r from-tech-blue to-tech-cyan text-white font-semibold rounded-lg hover:scale-105 transition-transform tech-glow focus:outline-none focus:ring-4 focus:ring-tech-cyan/30"
-                        >
+                        <button type="submit" class="w-full py-4 bg-gradient-to-r from-tech-blue to-tech-cyan text-white font-semibold rounded-lg hover:scale-105 transition-transform tech-glow focus:outline-none focus:ring-4 focus:ring-tech-cyan/30">
                             Envoyer mon témoignage
                         </button>
                     </form>
-
+                    <div id="form-error" class="hidden mt-4 text-red-400"></div>
                     <div class="mt-6 text-center">
-                        <p class="text-sm text-gray-400">
-                            📧 Votre témoignage sera examiné par notre équipe avant publication
-                        </p>
+                        <p class="text-sm text-gray-400">📧 Votre témoignage sera examiné par notre équipe avant publication</p>
                     </div>
                 </div>
 
-                <!-- Success Message -->
                 <div id="successMessage" class="hidden mt-8 p-6 bg-green-500/20 border border-green-500/50 rounded-2xl">
                     <div class="flex items-center justify-center space-x-3">
-                        <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
+                        <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                         <div>
                             <h3 class="text-xl font-bold text-green-400">Merci !</h3>
                             <p class="text-gray-300">Votre témoignage a été envoyé avec succès. Il sera examiné par notre équipe avant publication.</p>
@@ -204,28 +161,21 @@
                         H-Lab
                     </div>
                     <p class="text-gray-400 mb-6 max-w-md">
-                        Prêt à transformer vos idées en innovations IoT ? Contactez-nous dès aujourd'hui
-                        et découvrons ensemble les possibilités infinies de la technologie.
+                        Depuis 2018, nous façonnons l'avenir de l'IoT avec passion, innovation et excellence. 
+                        Découvrez notre histoire et rejoignez notre aventure technologique.
                     </p>
                     <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-tech-blue rounded-full flex items-center justify-center hover:bg-tech-cyan transition-colors">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
-                            </svg>
+                        <a href="#" data-setting="social-twitter" class="w-10 h-10 bg-tech-blue rounded-full flex items-center justify-center hover:bg-tech-cyan transition-colors">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-tech-blue rounded-full flex items-center justify-center hover:bg-tech-cyan transition-colors">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                            </svg>
+                        <a href="#" data-setting="social-linkedin" class="w-10 h-10 bg-tech-blue rounded-full flex items-center justify-center hover:bg-tech-cyan transition-colors">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-tech-blue rounded-full flex items-center justify-center hover:bg-tech-cyan transition-colors">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-                            </svg>
+                        <a href="#" data-setting="social-github" class="w-10 h-10 bg-tech-blue rounded-full flex items-center justify-center hover:bg-tech-cyan transition-colors">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
                         </a>
                     </div>
                 </div>
-
                 <div>
                     <h3 class="text-lg font-semibold mb-6">Navigation</h3>
                     <ul class="space-y-3">
@@ -236,32 +186,15 @@
                         <li><a href="contact.html" class="text-gray-400 hover:text-tech-cyan transition-colors">Contact</a></li>
                     </ul>
                 </div>
-
                 <div>
                     <h3 class="text-lg font-semibold mb-6">Contact Rapide</h3>
                     <ul class="space-y-3">
-                        <li class="flex items-center text-gray-400">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                            contact@h-lab.fr
-                        </li>
-                        <li class="flex items-center text-gray-400">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                            </svg>
-                            +33 1 23 45 67 89
-                        </li>
-                        <li class="flex items-center text-gray-400">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            Réponse sous 24h
-                        </li>
+                        <li class="flex items-center text-gray-400"><svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> contact@h-lab.fr</li>
+                        <li class="flex items-center text-gray-400"><svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg> +33 1 23 45 67 89</li>
+                        <li class="flex items-center text-gray-400"><svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Réponse sous 24h</li>
                     </ul>
                 </div>
             </div>
-
             <div class="border-t border-gray-700 mt-12 pt-8">
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <p class="text-gray-400 text-sm">© 2024 H-Lab. Tous droits réservés.</p>
@@ -272,85 +205,178 @@
     </footer>
 
     <script>
-        // GSAP Animation
-        gsap.set('.bg-tech-gray\\/50', { opacity: 0, y: 50 });
-        gsap.to('.bg-tech-gray\\/50', {
-            opacity: 1,
-            y: 0,
-            duration: 1.5,
-            ease: 'power2.out',
-            delay: 0.5
-        });
+document.addEventListener('DOMContentLoaded', () => {
+    // GSAP Animation
+    gsap.set('#form-container', { opacity: 0, y: 50 });
+    gsap.to('#form-container', { opacity: 1, y: 0, duration: 1, ease: 'power2.out', delay: 0.5 });
 
-        // Form submission
-        document.getElementById('testimonyForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+    // --- Rating Stars Logic (VERSION CORRIGÉE) ---
+    const starsContainer = document.getElementById('rating-stars');
+    const ratingInput = document.getElementById('rating');
+    let currentRating = 5;
+    let stars = []; // Garder les références aux étoiles
 
-            const formData = new FormData(this);
-            const testimonyData = Object.fromEntries(formData);
+    console.log('🟣 [INIT] Initialisation du système d\'étoiles');
 
-            // Remove the terms acceptance from data
-            delete testimonyData.accept_terms;
+    // CRÉER les étoiles UNE SEULE FOIS (pas de re-création)
+    function createStarsOnce() {
+        starsContainer.innerHTML = '';
+        stars = [];
+        
+        for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('span');
+            star.innerHTML = '★';
+            star.dataset.value = i;
+            star.style.cursor = 'pointer';
+            star.className = i <= currentRating ? 'text-yellow-400' : 'text-gray-600';
+            starsContainer.appendChild(star);
+            stars.push(star);
+        }
+        
+        console.log('🟣 [INIT] 5 étoiles créées (une seule fois)');
+    }
 
-            // Add to testimonies (will be pending review)
-            testimonyData.pending_review = true;
-            testimonyData.date_submitted = new Date().toISOString();
-
-            try {
-                AdminData.add('temoignages', testimonyData);
-
-                // Show success message
-                document.getElementById('testimonyForm').classList.add('hidden');
-                document.getElementById('successMessage').classList.remove('hidden');
-
-                // Scroll to success message
-                document.getElementById('successMessage').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-
-                // Reset form for potential reuse
-                this.reset();
-
-            } catch (error) {
-                alert('Une erreur est survenue. Veuillez réessayer.');
-                console.error('Error submitting testimony:', error);
+    // METTRE À JOUR l'apparence (SANS détruire les éléments DOM)
+    function updateStarsDisplay(rating) {
+        stars.forEach((star, index) => {
+            const starValue = index + 1;
+            if (starValue <= rating) {
+                star.className = 'text-yellow-400';
+            } else {
+                star.className = 'text-gray-600';
             }
         });
+    }
 
-        // Mobile Menu Toggle
-        const mobileMenuButton = document.querySelector('.md\\:hidden');
-        if (mobileMenuButton) {
-            const mobileMenu = document.createElement('div');
-            mobileMenu.className = 'md:hidden bg-tech-dark/95 backdrop-blur-md border-t border-tech-blue/20 absolute top-full left-0 w-full';
-            mobileMenu.innerHTML = `
-                <div class="px-6 py-4 space-y-4">
-                    <a href="index.html" class="block hover:text-tech-cyan transition-colors">Accueil</a>
-                    <a href="a-propos.html" class="block hover:text-tech-cyan transition-colors">À propos</a>
-                    <a href="projects.html" class="block hover:text-tech-cyan transition-colors">Projets</a>
-                    <a href="add-testimony.html" class="block hover:text-tech-cyan transition-colors">Témoigner</a>
-                    <a href="contact.html" class="block hover:text-tech-cyan transition-colors">Contact</a>
-                </div>
-            `;
-            mobileMenu.style.display = 'none';
+    // Créer les étoiles au chargement
+    createStarsOnce();
 
-            mobileMenuButton.parentNode.appendChild(mobileMenu);
-
-            mobileMenuButton.addEventListener('click', () => {
-                if (mobileMenu.style.display === 'none') {
-                    mobileMenu.style.display = 'block';
-                } else {
-                    mobileMenu.style.display = 'none';
-                }
-            });
-
-            // Close mobile menu when clicking on links
-            mobileMenu.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.style.display = 'none';
-                });
-            });
+    // Event listener pour les CLICS
+    starsContainer.addEventListener('click', function(e) {
+        console.log('🔵 [CLICK] Clic détecté sur:', e.target);
+        
+        if (e.target.dataset && e.target.dataset.value) {
+            const newRating = parseInt(e.target.dataset.value, 10);
+            console.log('🔵 [CLICK] Nouvelle note sélectionnée:', newRating);
+            
+            currentRating = newRating;
+            ratingInput.value = currentRating;
+            updateStarsDisplay(currentRating);
+            
+            console.log('🔵 [CLICK] currentRating mis à jour:', currentRating);
+            console.log('🔵 [CLICK] ratingInput.value mis à jour:', ratingInput.value);
         }
+    });
+
+    // Event listener pour le HOVER (survol)
+    starsContainer.addEventListener('mouseover', function(e) {
+        if (e.target.dataset && e.target.dataset.value) {
+            const hoverRating = parseInt(e.target.dataset.value, 10);
+            updateStarsDisplay(hoverRating);
+        }
+    });
+
+    // Event listener pour sortie du HOVER
+    starsContainer.addEventListener('mouseout', function() {
+        updateStarsDisplay(currentRating);
+    });
+
+    console.log('🟣 [INIT] Event listeners attachés');
+    // --- End Rating Stars Logic ---
+
+    // Form submission
+    const testimonyForm = document.getElementById('testimonyForm');
+    testimonyForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const form = this;
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        const errorDiv = document.getElementById('form-error');
+
+        errorDiv.classList.add('hidden');
+        errorDiv.textContent = '';
+        submitButton.disabled = true;
+        submitButton.innerHTML = 'Envoi en cours...';
+
+        // Lire la valeur depuis le input hidden (source de vérité)
+        const finalRating = parseInt(ratingInput.value, 10);
+
+        const data = {
+            clientName: document.getElementById('nom').value,
+            clientPosition: document.getElementById('type').value,
+            content: document.getElementById('description').value,
+            rating: finalRating
+        };
+
+        console.log('🟢 [SUBMIT] currentRating:', currentRating);
+        console.log('🟢 [SUBMIT] ratingInput.value:', ratingInput.value);
+        console.log('🟢 [SUBMIT] finalRating:', finalRating);
+        console.log('🟢 [SUBMIT] Données envoyées:', JSON.stringify(data, null, 2));
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/testimonials`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Une erreur réseau est survenue.');
+            }
+
+            document.getElementById('form-container').classList.add('hidden');
+            const successMessage = document.getElementById('successMessage');
+            successMessage.classList.remove('hidden');
+            gsap.from(successMessage, { opacity: 0, scale: 0.8, duration: 0.5, ease: 'power2.out' });
+            successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            form.reset();
+            
+            // Réinitialiser le système d'étoiles
+            currentRating = 5;
+            ratingInput.value = 5;
+            updateStarsDisplay(5);
+
+        } catch (error) {
+            errorDiv.textContent = `Erreur lors de l\'envoi : ${error.message}`;
+            errorDiv.classList.remove('hidden');
+            console.error('Error submitting testimony:', error);
+        } finally {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
+        }
+    });
+
+    // Mobile Menu Toggle
+    const mobileMenuButton = document.querySelector('nav button[class*="md:hidden"]');
+    if (mobileMenuButton) {
+        const mobileMenu = document.createElement('div');
+        mobileMenu.className = 'md:hidden bg-tech-dark/95 backdrop-blur-md border-t border-tech-blue/20 absolute top-full left-0 w-full';
+        mobileMenu.innerHTML = `
+        <div class="px-6 py-4 space-y-4">
+            <a href="index.html" class="block hover:text-tech-cyan transition-colors">Accueil</a>
+            <a href="a-propos.html" class="block hover:text-tech-cyan transition-colors">À propos</a>
+            <a href="projects.html" class="block hover:text-tech-cyan transition-colors">Projets</a>
+            <a href="add-testimony.html" class="block hover:text-tech-cyan transition-colors">Témoigner</a>
+            <a href="contact.html" class="block hover:text-tech-cyan transition-colors">Contact</a>
+        </div>`;
+        mobileMenu.style.display = 'none';
+        mobileMenuButton.closest('nav').appendChild(mobileMenu);
+        
+        mobileMenuButton.addEventListener('click', () => {
+            const isHidden = mobileMenu.style.display === 'none';
+            gsap.to(mobileMenu, { 
+                height: isHidden ? 'auto' : 0, 
+                opacity: isHidden ? 1 : 0, 
+                duration: 0.3, 
+                onStart: () => { if(isHidden) mobileMenu.style.display = 'block'; }, 
+                onComplete: () => { if(!isHidden) mobileMenu.style.display = 'none'; }
+            });
+        });
+    }
+});
     </script>
+    <script src="js/company-settings.js"></script>
 </body>
 </html>

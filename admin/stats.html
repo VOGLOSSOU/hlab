@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Statistiques - H-Lab Admin</title>
+    <script src="js/auth-guard.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tech-blue': '#0066FF',
+                        'tech-cyan': '#00FFFF',
+                        'tech-dark': '#0A0F1C',
+                        'tech-gray': '#1A1F2E'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tech-gradient { background: linear-gradient(135deg, #0066FF 0%, #00FFFF 100%); }
+        .tech-glow { box-shadow: 0 0 20px rgba(0, 102, 255, 0.3); }
+        .input-focus { transition: all 0.3s ease; }
+        .input-focus:focus { border-color: #00FFFF; box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1); transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-tech-dark text-white">
+    <!-- Navigation -->
+    <nav class="bg-tech-gray border-b border-tech-blue/20">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold tech-gradient bg-clip-text text-transparent">H-Lab Admin</a>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-400" id="adminEmail"></span>
+                <button id="logout-button" class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">Déconnexion</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-tech-gray min-h-screen border-r border-tech-blue/20">
+            <nav class="p-6">
+                <ul class="space-y-2">
+                    <li><a href="messages.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">✉️ Messages</a></li>
+                    <li><a href="index.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">📊 Dashboard</a></li>
+                    <li><a href="videos.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🎥 Vidéos</a></li>
+                    <li><a href="formations.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🎓 Formations</a></li>
+                    <li><a href="produits.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🛍️ Produits</a></li>
+                    <li><a href="partenaires.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🤝 Partenaires</a></li>
+                    <li><a href="temoignages.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">💬 Témoignages</a></li>
+                    <li><a href="projets.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🚀 Projets</a></li>
+                    <li><a href="equipe.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">👥 Équipe</a></li>
+                    <li><a href="stats.html" class="block px-4 py-3 bg-tech-blue/20 text-tech-cyan rounded-lg font-semibold">📈 Statistiques</a></li>
+                    <li><a href="admin-settings.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">⚙️ Contact & Adresse</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Gestion des Statistiques</h1>
+                    <p class="text-gray-400">Modifiez les chiffres clés affichés sur le site public.</p>
+                </div>
+            </div>
+
+            <div class="bg-tech-gray rounded-2xl p-8">
+                <form id="statsForm" class="space-y-8">
+                    <div id="statsContainer" class="space-y-6">
+                        <!-- Stats will be loaded here -->
+                        <p class="text-center text-gray-400">Chargement des statistiques...</p>
+                    </div>
+                    <div class="pt-6 border-t border-tech-blue/20 flex justify-end">
+                        <button type="submit" class="px-8 py-3 bg-gradient-to-r from-tech-blue to-tech-cyan text-white font-semibold rounded-lg hover:scale-105 transition-transform tech-glow">
+                            Enregistrer les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'https://hlab-api.onrender.com/api';
+        const ENDPOINT = '/stats';
+        let allStats = [];
+
+        async function fetchAPI(endpoint, options = {}) {
+            const token = localStorage.getItem('authToken');
+            if (!token) { window.location.href = 'login.html?reason=session_expired'; throw new Error('Session expirée'); }
+            const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+            const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+            if (response.status === 401) { localStorage.removeItem('authToken'); localStorage.removeItem('user'); window.location.href = 'login.html?reason=session_expired'; throw new Error('Session expirée'); }
+            if (!response.ok) { const errorData = await response.json().catch(() => ({ message: `Erreur HTTP ${response.status}` })); throw new Error(errorData.message); }
+            return response.status === 204 ? null : response.json();
+        }
+
+        function showNotification(message, type = 'info') {
+            // A simple alert for now, can be replaced by a more sophisticated system from main.js
+            alert(message);
+        }
+
+        async function loadStats() {
+            try {
+                const result = await fetchAPI(ENDPOINT);
+                allStats = result.data;
+                renderStats();
+            } catch (error) {
+                if (error.message !== 'Session expirée') {
+                    document.getElementById('statsContainer').innerHTML = `<p class="text-red-400 text-center">Erreur de chargement: ${error.message}</p>`;
+                }
+            }
+        }
+
+        function renderStats() {
+            const container = document.getElementById('statsContainer');
+            if (!allStats || allStats.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-center">Aucune statistique trouvée.</p>';
+                return;
+            }
+
+            container.innerHTML = allStats.map(stat => `
+                <div class="grid md:grid-cols-12 gap-4 items-center">
+                    <div class="md:col-span-4">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Label</label>
+                        <div class="w-full p-3 bg-tech-dark/30 border-2 border-gray-700 rounded-lg text-gray-300">
+                            ${stat.label}
+                        </div>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="value-${stat.id}" class="block text-sm font-medium mb-2">Valeur</label>
+                        <input type="number" id="value-${stat.id}" data-id="${stat.id}" data-field="value" value="${stat.value}" class="input-focus w-full p-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg">
+                    </div>
+                    <div class="md:col-span-6">
+                        <label for="description-${stat.id}" class="block text-sm font-medium mb-2">Description</label>
+                        <input type="text" id="description-${stat.id}" data-id="${stat.id}" data-field="description" value="${stat.description || ''}" placeholder="Description (optionnel)" class="input-focus w-full p-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('statsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitButton = this.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Sauvegarde en cours...';
+
+            const inputs = document.querySelectorAll('#statsContainer input');
+            const updates = {};
+
+            // Group updates by stat ID
+            inputs.forEach(input => {
+                const id = input.dataset.id;
+                const field = input.dataset.field;
+                // On ne prend que les champs 'value' et 'description'
+                if (field === 'value' || field === 'description') {
+                    const value = input.type === 'number' ? parseInt(input.value, 10) : input.value;
+
+                    if (!updates[id]) {
+                        updates[id] = { id };
+                    }
+                    updates[id][field] = value;
+                }
+            });
+
+            const updatePromises = Object.values(updates).map(statData => 
+                fetchAPI(`${ENDPOINT}/${statData.id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(statData)
+                })
+            );
+
+            try {
+                await Promise.all(updatePromises);
+                showNotification('Statistiques mises à jour avec succès!', 'success');
+                gsap.from(submitButton, { scale: 1.1, duration: 0.3, ease: 'power2.out' });
+            } catch (error) {
+                if (error.message !== 'Session expirée') {
+                    showNotification(`Erreur lors de la sauvegarde: ${error.message}`, 'error');
+                }
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Enregistrer les modifications';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user && user.email) {
+                document.getElementById('adminEmail').textContent = user.email;
+            }
+            loadStats();
+        });
+    </script>
+</body>
+</html>

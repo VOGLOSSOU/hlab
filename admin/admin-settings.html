@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact & Adresse - Admin H-Lab</title>
+    <script src="js/auth-guard.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tech-blue': '#0066FF',
+                        'tech-cyan': '#00FFFF',
+                        'tech-dark': '#0A0F1C',
+                        'tech-gray': '#1A1F2E'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tech-gradient { background: linear-gradient(135deg, #0066FF 0%, #00FFFF 100%); }
+    </style>
+</head>
+<body class="bg-tech-dark text-white min-h-screen">
+    
+    <!-- Navigation Admin -->
+    <nav class="bg-tech-gray border-b border-tech-blue/20">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold tech-gradient bg-clip-text text-transparent">H-Lab Admin</a>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-400" id="adminEmail"></span>
+                <button id="logout-button" class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">Déconnexion</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-tech-gray min-h-screen border-r border-tech-blue/20">
+            <nav class="p-6">
+                <ul class="space-y-2">
+                    <li><a href="messages.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">✉️ Messages</a></li>
+                    <li><a href="index.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">📊 Dashboard</a></li>
+                    <li><a href="videos.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🎥 Vidéos</a></li>
+                    <li><a href="formations.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🎓 Formations</a></li>
+                    <li><a href="produits.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🛍️ Produits</a></li>
+                    <li><a href="partenaires.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🤝 Partenaires</a></li>
+                    <li><a href="temoignages.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">💬 Témoignages</a></li>
+                    <li><a href="projets.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🚀 Projets</a></li>
+                    <li><a href="equipe.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">👥 Équipe</a></li>
+                    <li><a href="stats.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">📈 Statistiques</a></li>
+                    <li><a href="admin-settings.html" class="block px-4 py-3 bg-tech-blue/20 text-tech-cyan rounded-lg font-semibold">⚙️ Contact & Adresse</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <h2 class="text-3xl font-bold mb-8">Contact & Adresse</h2>
+
+            <!-- Messages -->
+            <div id="message" class="hidden mb-6 p-4 rounded-lg"></div>
+
+            <!-- Onglets -->
+            <div class="flex space-x-4 mb-8 border-b border-tech-blue/20">
+                <button onclick="switchTab('contact')" id="tab-contact" class="tab-btn px-6 py-3 font-semibold border-b-2 border-tech-cyan text-tech-cyan">
+                    <i class="fas fa-address-book mr-2"></i>Contact & Localisation
+                </button>
+                <button onclick="switchTab('social')" id="tab-social" class="tab-btn px-6 py-3 font-semibold border-b-2 border-transparent text-gray-400 hover:text-tech-cyan">
+                    <i class="fas fa-share-alt mr-2"></i>Réseaux Sociaux
+                </button>
+            </div>
+
+            <!-- SECTION CONTACT -->
+            <div id="section-contact" class="tab-content">
+                <form id="form-contact" class="max-w-5xl">
+                    <div class="grid lg:grid-cols-2 gap-6 mb-6">
+                        <!-- Colonne de gauche : Informations de contact -->
+                        <div class="bg-tech-gray p-6 rounded-lg flex flex-col">
+                            <h3 class="text-xl font-bold mb-4 text-tech-cyan">Informations de contact</h3>
+                            <div class="space-y-4 flex-grow">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2"><i class="fas fa-phone mr-2"></i>Téléphone</label>
+                                    <input type="tel" id="contact_phone" class="w-full bg-tech-dark/50 border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-tech-cyan" placeholder="+33 1 23 45 67 89">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2"><i class="fas fa-envelope mr-2"></i>Email</label>
+                                    <input type="email" id="contact_email" class="w-full bg-tech-dark/50 border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-tech-cyan" placeholder="contact@h-lab.fr">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2"><i class="fas fa-map-marker-alt mr-2"></i>Adresse</label>
+                                    <input type="text" id="contact_address" class="w-full bg-tech-dark/50 border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-tech-cyan" placeholder="42 Avenue des Champs-Élysées, 75008 Paris">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Colonne de droite : Coordonnées GPS -->
+                        <div class="bg-tech-gray p-6 rounded-lg flex flex-col">
+                            <h3 class="text-xl font-bold mb-4 text-tech-cyan">Coordonnées GPS</h3>
+                            <p class="text-sm text-gray-400 mb-4">Utilisées pour afficher la carte sur le site</p>
+                            <div class="grid grid-cols-2 gap-4 flex-grow">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Latitude</label>
+                                    <input type="text" id="contact_gps_lat" class="w-full bg-tech-dark/50 border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-tech-cyan" placeholder="48.8566">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Longitude</label>
+                                    <input type="text" id="contact_gps_lng" class="w-full bg-tech-dark/50 border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-tech-cyan" placeholder="2.3522">
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="button" id="locate-me-btn" class="w-full text-sm py-2 px-4 border-2 border-dashed border-tech-blue/50 text-tech-cyan rounded-lg hover:bg-tech-blue/10 hover:border-tech-blue transition-colors">
+                                    <i class="fas fa-location-arrow mr-2"></i>
+                                    Remplir avec ma position actuelle
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="bg-tech-blue hover:bg-tech-cyan text-white font-bold py-3 px-8 rounded-lg"><i class="fas fa-save mr-2"></i>Enregistrer</button>
+                </form>
+            </div>
+
+            <!-- SECTION RÉSEAUX SOCIAUX -->
+            <div id="section-social" class="tab-content hidden">
+                <form id="form-social" class="space-y-6 max-w-2xl">
+                    <div class="bg-tech-gray p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4 text-tech-cyan">Liens des réseaux sociaux</h3>
+                        <p class="text-sm text-gray-400 mb-6">Mettez l'URL complète de vos profils</p>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2"><i class="fab fa-twitter text-blue-400 mr-2"></i>Twitter / X</label>
+                                <input type="url" id="social_twitter" class="w-full bg-tech-dark/50 border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-tech-cyan" placeholder="https://twitter.com/hlab">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2"><i class="fab fa-linkedin text-blue-600 mr-2"></i>LinkedIn</label>
+                                <input type="url" id="social_linkedin" class="w-full bg-tech-dark/50 border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-tech-cyan" placeholder="https://linkedin.com/company/hlab">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2"><i class="fab fa-github text-gray-300 mr-2"></i>GitHub</label>
+                                <input type="url" id="social_github" class="w-full bg-tech-dark/50 border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-tech-cyan" placeholder="https://github.com/hlab">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="bg-tech-blue hover:bg-tech-cyan text-white font-bold py-3 px-8 rounded-lg"><i class="fas fa-save mr-2"></i>Enregistrer</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'https://hlab-api.onrender.com/api';
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-tech-cyan', 'text-tech-cyan');
+                btn.classList.add('border-transparent', 'text-gray-400');
+            });
+            document.getElementById(`section-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).classList.add('border-tech-cyan', 'text-tech-cyan');
+            document.getElementById(`tab-${tab}`).classList.remove('text-gray-400');
+        }
+
+        async function loadSettings() {
+            try {
+                const response = await fetch(`${API_URL}/company-settings`);
+                if (!response.ok) throw new Error('Erreur de chargement');
+                const settings = await response.json();
+                Object.keys(settings).forEach(key => {
+                    const input = document.getElementById(key);
+                    if (input) input.value = settings[key];
+                });
+            } catch (error) {
+                showMessage('Erreur lors du chargement des paramètres', 'error');
+            }
+        }
+
+        async function saveSettings(formId) {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                showMessage('Vous devez être connecté', 'error');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const form = document.getElementById(formId);
+            const inputs = form.querySelectorAll('input');
+            const data = {};
+            inputs.forEach(input => {
+                data[input.id] = input.value;
+            });
+
+            try {
+                const response = await fetch(`${API_URL}/company-settings`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showMessage('Paramètres enregistrés avec succès !', 'success');
+                } else {
+                    const err = await response.json();
+                    showMessage(`Erreur: ${err.message}`, 'error');
+                }
+            } catch (error) {
+                showMessage('Erreur réseau', 'error');
+            }
+        }
+
+        document.getElementById('form-contact').addEventListener('submit', (e) => {
+            e.preventDefault();
+            saveSettings('form-contact');
+        });
+
+        document.getElementById('form-social').addEventListener('submit', (e) => {
+            e.preventDefault();
+            saveSettings('form-social');
+        });
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `mb-6 p-4 rounded-lg ${type === 'success' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`;
+            messageDiv.classList.remove('hidden');
+            setTimeout(() => messageDiv.classList.add('hidden'), 5000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user && user.email) {
+                document.getElementById('adminEmail').textContent = user.email;
+            }
+            loadSettings();
+
+            // --- Logique pour le bouton de géolocalisation ---
+            const locateBtn = document.getElementById('locate-me-btn');
+            const latInput = document.getElementById('contact_gps_lat');
+            const lngInput = document.getElementById('contact_gps_lng');
+
+            if (locateBtn && latInput && lngInput) {
+                locateBtn.addEventListener('click', () => {
+                    if (!navigator.geolocation) {
+                        showMessage("La géolocalisation n'est pas supportée par votre navigateur.", 'error');
+                        return;
+                    }
+
+                    locateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Recherche en cours...';
+                    locateBtn.disabled = true;
+
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            latInput.value = position.coords.latitude.toFixed(6);
+                            lngInput.value = position.coords.longitude.toFixed(6);
+                            showMessage('Position récupérée avec succès !', 'success');
+                            locateBtn.innerHTML = '<i class="fas fa-location-arrow mr-2"></i>Remplir avec ma position actuelle';
+                            locateBtn.disabled = false;
+                        },
+                        (error) => {
+                            showMessage(`Erreur de géolocalisation: ${error.message}`, 'error');
+                            locateBtn.innerHTML = '<i class="fas fa-location-arrow mr-2"></i>Remplir avec ma position actuelle';
+                            locateBtn.disabled = false;
+                        }
+                    );
+                });
+            }
+        });
+    </script>
+</body>
+</html>

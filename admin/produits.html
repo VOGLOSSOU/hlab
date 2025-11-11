@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion Produits - H-Lab Admin</title>
+    <script src="js/auth-guard.js"></script>
+    <script src="js/main.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="data.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -34,18 +35,11 @@
 <body class="bg-tech-dark text-white">
     <!-- Navigation -->
     <nav class="bg-tech-gray border-b border-tech-blue/20">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <a href="index.html" class="text-2xl font-bold tech-gradient bg-clip-text text-transparent">H-Lab Admin</a>
-                    <span class="text-sm text-gray-400">| Gestion Produits</span>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-gray-400" id="adminEmail"></span>
-                    <button onclick="logout()" class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">
-                        Déconnexion
-                    </button>
-                </div>
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold tech-gradient bg-clip-text text-transparent">H-Lab Admin</a>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-400" id="adminEmail"></span>
+                <button id="logout-button" class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">Déconnexion</button>
             </div>
         </div>
     </nav>
@@ -55,14 +49,17 @@
         <aside class="w-64 bg-tech-gray min-h-screen border-r border-tech-blue/20">
             <nav class="p-6">
                 <ul class="space-y-2">
+                    <li><a href="messages.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">✉️ Messages</a></li>
                     <li><a href="index.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">📊 Dashboard</a></li>
                     <li><a href="videos.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">🎥 Vidéos</a></li>
                     <li><a href="formations.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">🎓 Formations</a></li>
                     <li><a href="produits.html" class="block px-4 py-3 bg-tech-blue/20 text-tech-cyan rounded-lg font-semibold">🛍️ Produits</a></li>
                     <li><a href="partenaires.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">🤝 Partenaires</a></li>
                     <li><a href="temoignages.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">💬 Témoignages</a></li>
-                    <li><a href="equipe.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">👥 Équipe</a></li>
                     <li><a href="projets.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">🚀 Projets</a></li>
+                    <li><a href="equipe.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">👥 Équipe</a></li>
+                    <li><a href="stats.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">📈 Statistiques</a></li>
+                    <li><a href="admin-settings.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">⚙️ Contact & Adresse</a></li>
                 </ul>
             </nav>
         </aside>
@@ -89,204 +86,101 @@
     </div>
 
     <!-- Add/Edit Modal -->
-    <div id="produitModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="modal bg-tech-gray rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="p-8">
-                <div class="flex justify-between items-start mb-6">
-                    <h2 id="modalTitle" class="text-3xl font-bold">Ajouter un produit</h2>
-                    <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <form id="produitForm" class="space-y-6">
-                    <input type="hidden" id="produitId" name="id">
-
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="nom" class="block text-sm font-medium mb-2">Nom du produit *</label>
-                            <input
-                                type="text"
-                                id="nom"
-                                name="nom"
-                                required
-                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
-                                placeholder="Nom du produit"
-                            >
-                        </div>
-
-                        <div>
-                            <label for="prix" class="block text-sm font-medium mb-2">Prix (€) *</label>
-                            <input
-                                type="number"
-                                id="prix"
-                                name="prix"
-                                required
-                                min="0"
-                                step="0.01"
-                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
-                                placeholder="99.99"
-                            >
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="description" class="block text-sm font-medium mb-2">Description *</label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            rows="3"
-                            required
-                            class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none resize-none"
-                            placeholder="Description du produit"
-                        ></textarea>
-                    </div>
-
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="categorie" class="block text-sm font-medium mb-2">Catégorie *</label>
-                            <input
-                                type="text"
-                                id="categorie"
-                                name="categorie"
-                                required
-                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
-                                placeholder="Kits de développement"
-                            >
-                        </div>
-
-                        <div>
-                            <label for="whatsapp_numero" class="block text-sm font-medium mb-2">Numéro WhatsApp</label>
-                            <input
-                                type="text"
-                                id="whatsapp_numero"
-                                name="whatsapp_numero"
-                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
-                                placeholder="+33123456789"
-                            >
-                        </div>
-                    </div>
-
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="images" class="block text-sm font-medium mb-2">Images (URLs séparées par des virgules)</label>
-                            <input
-                                type="text"
-                                id="images"
-                                name="images"
-                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
-                                placeholder="image1.jpg, image2.jpg"
-                            >
-                        </div>
-
-                        <div>
-                            <label for="caracteristiques" class="block text-sm font-medium mb-2">Caractéristiques (séparées par des virgules)</label>
-                            <input
-                                type="text"
-                                id="caracteristiques"
-                                name="caracteristiques"
-                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
-                                placeholder="Arduino Uno, Capteurs, Câbles"
-                            >
-                        </div>
-                    </div>
-
-                    <div class="flex items-center space-x-3">
-                        <input
-                            type="checkbox"
-                            id="disponibilite"
-                            name="disponibilite"
-                            class="w-5 h-5 text-tech-blue bg-tech-gray border-gray-600 rounded focus:ring-tech-cyan"
-                        >
-                        <label for="disponibilite" class="text-sm font-medium">Produit disponible</label>
-                    </div>
-
-                    <div class="flex space-x-4">
-                        <button type="submit" class="flex-1 py-3 bg-gradient-to-r from-tech-blue to-tech-cyan text-white font-semibold rounded-lg hover:scale-105 transition-transform tech-glow focus:outline-none">
-                            Sauvegarder
-                        </button>
-                        <button type="button" onclick="closeModal()" class="flex-1 py-3 border-2 border-gray-600 text-gray-400 font-semibold rounded-lg hover:border-gray-500 hover:text-white transition-colors">
-                            Annuler
-                        </button>
-                    </div>
-                </form>
+    <div id="itemModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="modal bg-tech-gray rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8">
+            <div class="flex justify-between items-start mb-6">
+                <h2 id="modalTitle" class="text-3xl font-bold">Ajouter un produit</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
+            <form id="itemForm" class="space-y-6">
+                <input type="hidden" id="itemId" name="id">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium mb-2">Nom du produit *</label>
+                        <input type="text" id="name" name="name" required class="input-focus w-full p-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg">
+                    </div>
+                    <div>
+                        <label for="price" class="block text-sm font-medium mb-2">Prix (€) *</label>
+                        <input type="number" id="price" name="price" required min="0" step="0.01" class="input-focus w-full p-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg">
+                    </div>
+                </div>
+                <div>
+                    <label for="description" class="block text-sm font-medium mb-2">Description *</label>
+                    <textarea id="description" name="description" rows="4" required class="input-focus w-full p-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg"></textarea>
+                </div>
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 py-3 bg-gradient-to-r from-tech-blue to-tech-cyan text-white font-semibold rounded-lg">Sauvegarder</button>
+                    <button type="button" onclick="closeModal()" class="flex-1 py-3 border-2 border-gray-600 rounded-lg">Annuler</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="modal bg-tech-gray rounded-2xl max-w-md w-full">
-            <div class="p-8">
-                <h2 class="text-2xl font-bold mb-4">Confirmer la suppression</h2>
-                <p class="text-gray-400 mb-6">Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.</p>
-                <div class="flex space-x-4">
-                    <button onclick="confirmDelete()" class="flex-1 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
-                        Supprimer
-                    </button>
-                    <button onclick="closeDeleteModal()" class="flex-1 py-3 border-2 border-gray-600 text-gray-400 font-semibold rounded-lg hover:border-gray-500 hover:text-white transition-colors">
-                        Annuler
-                    </button>
-                </div>
+    <div id="deleteModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="modal bg-tech-gray rounded-2xl max-w-md w-full p-8">
+            <h2 class="text-2xl font-bold mb-4">Confirmer la suppression</h2>
+            <p class="text-gray-400 mb-6">Cette action est irréversible.</p>
+            <div class="flex space-x-4">
+                <button onclick="confirmDelete()" class="flex-1 py-3 bg-red-600 text-white font-semibold rounded-lg">Supprimer</button>
+                <button onclick="closeDeleteModal()" class="flex-1 py-3 border-2 border-gray-600 rounded-lg">Annuler</button>
             </div>
         </div>
     </div>
 
     <script>
-        let currentProduitId = null;
-        let deleteProduitId = null;
+        const API_URL = 'https://hlab-api.onrender.com/api';
+        const ENDPOINT = '/products';
+        let allItems = [];
+        let deleteItemId = null;
 
-        // Check authentication
-        if (localStorage.getItem('adminLoggedIn') !== 'true') {
-            window.location.href = 'login.html';
+        async function fetchAPI(endpoint, options = {}) {
+            const token = localStorage.getItem('authToken');
+            if (!token) { window.location.href = 'login.html?reason=session_expired'; throw new Error('Session expirée'); }
+            const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+            const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+            if (response.status === 401) { localStorage.removeItem('authToken'); window.location.href = 'login.html?reason=session_expired'; throw new Error('Session expirée'); }
+            if (!response.ok) { const errorData = await response.json().catch(() => ({ message: `Erreur HTTP ${response.status}` })); throw new Error(errorData.message); }
+            return response.status === 204 ? null : response.json();
         }
 
-        // Display admin email
-        const adminEmail = localStorage.getItem('adminEmail');
-        if (adminEmail) {
-            document.getElementById('adminEmail').textContent = adminEmail;
+        async function loadItems() {
+            try {
+                const result = await fetchAPI(ENDPOINT);
+                allItems = result.data;
+                renderItems();
+            } catch (error) {
+                if (error.message !== 'Session expirée') alert(`Erreur de chargement: ${error.message}`);
+            }
         }
 
-        // Logout function
-        function logout() {
-            localStorage.removeItem('adminLoggedIn');
-            localStorage.removeItem('adminEmail');
-            window.location.href = 'login.html';
-        }
-
-        // Load products
-        function loadProduits() {
-            const produits = AdminData.get('produits');
+        function renderItems() {
             const container = document.getElementById('produitsList');
-
-            if (produits.length === 0) {
+            if (!allItems || allItems.length === 0) {
                 container.innerHTML = '<p class="text-gray-400 text-center py-8 col-span-full">Aucun produit trouvé</p>';
                 return;
             }
 
-            container.innerHTML = produits.map(produit => `
-                <div class="card-hover bg-tech-dark/50 p-6 rounded-2xl">
+            container.innerHTML = allItems.map(item => `
+                <div id="item-${item.id}" class="card-hover bg-tech-dark/50 p-6 rounded-2xl">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
-                            <h3 class="text-xl font-bold mb-2">${produit.nom}</h3>
-                            <p class="text-gray-400 mb-3 text-sm">${produit.description.substring(0, 100)}${produit.description.length > 100 ? '...' : ''}</p>
+                            <h3 class="text-xl font-bold mb-2">${item.name}</h3>
+                            <p class="text-gray-400 mb-3 text-sm">${item.description.substring(0, 100)}${item.description.length > 100 ? '...' : ''}</p>
                             <div class="flex justify-between items-center mb-3">
-                                <span class="text-2xl font-bold text-tech-cyan">${produit.prix}€</span>
-                                <span class="px-2 py-1 rounded-full text-xs ${produit.disponibilite ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">
-                                    ${produit.disponibilite ? 'Disponible' : 'Indisponible'}
+                                <span class="text-2xl font-bold text-tech-cyan">${item.price}€</span>
+                                <span class="px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                                    Disponible
                                 </span>
                             </div>
-                            <div class="text-sm text-gray-500">
-                                <span>Catégorie: ${produit.categorie}</span>
-                            </div>
                         </div>
-                        <div class="flex space-x-2">
-                            <button onclick="editProduit(${produit.id})" class="p-2 text-tech-cyan hover:bg-tech-cyan/20 rounded-lg transition-colors">
+                        <div class="flex flex-col space-y-2 ml-4">
+                            <button onclick="openEditModal(${item.id})" class="p-2 text-tech-cyan hover:bg-tech-cyan/20 rounded-lg transition-colors">
                                 ✏️
                             </button>
-                            <button onclick="deleteProduit(${produit.id})" class="p-2 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors">
+                            <button onclick="openDeleteModal(${item.id})" class="p-2 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors">
                                 🗑️
                             </button>
                         </div>
@@ -295,36 +189,26 @@
             `).join('');
         }
 
-        // Open add modal
         function openAddModal() {
+            document.getElementById('itemForm').reset();
+            document.getElementById('itemId').value = '';
             document.getElementById('modalTitle').textContent = 'Ajouter un produit';
-            document.getElementById('produitForm').reset();
-            document.getElementById('produitId').value = '';
-            document.getElementById('produitModal').classList.remove('hidden');
+            document.getElementById('itemModal').classList.remove('hidden');
             gsap.fromTo('.modal', { opacity: 0, scale: 0.8, y: 50 }, { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: 'power2.out' });
         }
 
-        // Edit product
-        function editProduit(id) {
-            const produit = AdminData.getById('produits', id);
-            if (!produit) return;
-
+        function openEditModal(id) {
+            const item = allItems.find(i => i.id === id);
+            if (!item) return;
+            document.getElementById('itemId').value = item.id;
+            document.getElementById('name').value = item.name;
+            document.getElementById('description').value = item.description;
+            document.getElementById('price').value = item.price;
             document.getElementById('modalTitle').textContent = 'Modifier le produit';
-            document.getElementById('produitId').value = produit.id;
-            document.getElementById('nom').value = produit.nom;
-            document.getElementById('description').value = produit.description;
-            document.getElementById('prix').value = produit.prix;
-            document.getElementById('categorie').value = produit.categorie;
-            document.getElementById('whatsapp_numero').value = produit.whatsapp_numero || '';
-            document.getElementById('images').value = Array.isArray(produit.images) ? produit.images.join(', ') : produit.images || '';
-            document.getElementById('caracteristiques').value = Array.isArray(produit.caracteristiques) ? produit.caracteristiques.join(', ') : produit.caracteristiques || '';
-            document.getElementById('disponibilite').checked = produit.disponibilite || false;
-
-            document.getElementById('produitModal').classList.remove('hidden');
+            document.getElementById('itemModal').classList.remove('hidden');
             gsap.fromTo('.modal', { opacity: 0, scale: 0.8, y: 50 }, { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: 'power2.out' });
         }
 
-        // Close modal
         function closeModal() {
             gsap.to('.modal', {
                 opacity: 0,
@@ -333,73 +217,42 @@
                 duration: 0.3,
                 ease: 'power2.in',
                 onComplete: () => {
-                    document.getElementById('produitModal').classList.add('hidden');
+                    document.getElementById('itemModal').classList.add('hidden');
                 }
             });
         }
 
-        // Delete product
-        function deleteProduit(id) {
-            deleteProduitId = id;
-            document.getElementById('deleteModal').classList.remove('hidden');
+        function openDeleteModal(id) { deleteItemId = id; document.getElementById('deleteModal').classList.remove('hidden'); }
+        function closeDeleteModal() { deleteItemId = null; document.getElementById('deleteModal').classList.add('hidden'); }
+
+        async function confirmDelete() {
+            if (!deleteItemId) return;
+            try {
+                await fetchAPI(`${ENDPOINT}/${deleteItemId}`, { method: 'DELETE' });
+                loadItems();
+            } catch (error) { alert(`Erreur: ${error.message}`); }
+            finally { closeDeleteModal(); }
         }
 
-        // Confirm delete
-        function confirmDelete() {
-            if (deleteProduitId) {
-                AdminData.delete('produits', deleteProduitId);
-                loadProduits();
-                closeDeleteModal();
-                showNotification('Produit supprimé avec succès', 'success');
-            }
-        }
-
-        // Close delete modal
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
-            deleteProduitId = null;
-        }
-
-        // Form submission
-        document.getElementById('produitForm').addEventListener('submit', function(e) {
+        document.getElementById('itemForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-
             const formData = new FormData(this);
-            const produitData = Object.fromEntries(formData);
-
-            // Process arrays
-            if (produitData.images) {
-                produitData.images = produitData.images.split(',').map(item => item.trim()).filter(item => item);
-            }
-            if (produitData.caracteristiques) {
-                produitData.caracteristiques = produitData.caracteristiques.split(',').map(item => item.trim()).filter(item => item);
-            }
-
-            // Convert checkbox to boolean
-            produitData.disponibilite = document.getElementById('disponibilite').checked;
-
-            if (produitData.id) {
-                // Update
-                AdminData.update('produits', produitData.id, produitData);
-                showNotification('Produit mis à jour avec succès', 'success');
-            } else {
-                // Add
-                AdminData.add('produits', produitData);
-                showNotification('Produit ajouté avec succès', 'success');
-            }
-
-            loadProduits();
-            closeModal();
+            const data = Object.fromEntries(formData.entries());
+            const id = data.id;
+            try {
+                if (id) {
+                    await fetchAPI(`${ENDPOINT}/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+                } else {
+                    await fetchAPI(ENDPOINT, { method: 'POST', body: JSON.stringify(data) });
+                }
+                loadItems();
+                closeModal();
+            } catch (error) { alert(`Erreur: ${error.message}`); }
         });
 
-        // Notification system
-        function showNotification(message, type = 'info') {
-            alert(message);
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            loadProduits();
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('adminEmail').textContent = JSON.parse(localStorage.getItem('user'))?.email || 'Admin';
+            loadItems();
         });
     </script>
 </body>

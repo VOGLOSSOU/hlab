@@ -132,31 +132,7 @@
             ease: 'power2.out',
             delay: 0.5
         });
-
-        // Login Form Handler
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            // Simulation - accept any credentials
-            if (email && password) {
-                // Store login state (in a real app, this would be a JWT token)
-                localStorage.setItem('adminLoggedIn', 'true');
-                localStorage.setItem('adminEmail', email);
-
-                // Redirect to dashboard
-                window.location.href = 'index.html';
-            } else {
-                alert('Veuillez saisir vos identifiants');
-            }
-        });
-
-        // Check if already logged in
-        if (localStorage.getItem('adminLoggedIn') === 'true') {
-            window.location.href = 'index.html';
-        }
     </script>
+    <script src="js/login.js" defer></script>
 </body>
 </html>

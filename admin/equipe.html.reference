@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Équipe - H-Lab Admin</title>
+    <script src="js/auth-guard.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="data.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tech-blue': '#0066FF',
+                        'tech-cyan': '#00FFFF',
+                        'tech-dark': '#0A0F1C',
+                        'tech-gray': '#1A1F2E'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tech-gradient { background: linear-gradient(135deg, #0066FF 0%, #00FFFF 100%); }
+        .tech-glow { box-shadow: 0 0 20px rgba(0, 102, 255, 0.3); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 102, 255, 0.2); }
+        .input-focus { transition: all 0.3s ease; }
+        .input-focus:focus { border-color: #00FFFF; box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1); transform: translateY(-2px); }
+        .modal { backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="bg-tech-dark text-white">
+    <!-- Navigation -->
+    <nav class="bg-tech-gray border-b border-tech-blue/20">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-2xl font-bold tech-gradient bg-clip-text text-transparent">H-Lab Admin</a>
+                    <span class="text-sm text-gray-400">| Gestion Équipe</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-400" id="adminEmail"></span>
+                    <button id="logout-button" class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">
+                        Déconnexion
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="flex">
+        <aside class="w-64 bg-tech-gray min-h-screen border-r border-tech-blue/20">
+            <nav class="p-6">
+                <ul class="space-y-2">
+                    <li><a href="index.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">📊 Dashboard</a></li>
+                    <li><a href="videos.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">🎥 Vidéos</a></li>
+                    <li><a href="formations.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">🎓 Formations</a></li>
+                    <li><a href="produits.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">🛍️ Produits</a></li>
+                    <li><a href="partenaires.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">🤝 Partenaires</a></li>
+                    <li><a href="temoignages.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">💬 Témoignages</a></li>
+                    <li><a href="equipe.html" class="block px-4 py-3 bg-tech-blue/20 text-tech-cyan rounded-lg font-semibold">👥 Équipe</a></li>
+                    <li><a href="projets.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg transition-colors">🚀 Projets</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Gestion de l'Équipe</h1>
+                    <p class="text-gray-400">Gérez les membres de l'équipe H-Lab</p>
+                </div>
+                <button onclick="openAddModal()" class="px-6 py-3 bg-gradient-to-r from-tech-blue to-tech-cyan text-white font-semibold rounded-lg hover:scale-105 transition-transform tech-glow">
+                    ➕ Ajouter un membre
+                </button>
+            </div>
+
+            <!-- Team List -->
+            <div class="bg-tech-gray rounded-2xl p-6">
+                <div id="equipeList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Team members will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="membreModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="modal bg-tech-gray rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <h2 id="modalTitle" class="text-3xl font-bold">Ajouter un membre</h2>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form id="membreForm" class="space-y-6">
+                    <input type="hidden" id="membreId" name="id">
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="nom" class="block text-sm font-medium mb-2">Nom *</label>
+                            <input
+                                type="text"
+                                id="nom"
+                                name="nom"
+                                required
+                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
+                                placeholder="Nom"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="prenom" class="block text-sm font-medium mb-2">Prénom *</label>
+                            <input
+                                type="text"
+                                id="prenom"
+                                name="prenom"
+                                required
+                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
+                                placeholder="Prénom"
+                            >
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="poste" class="block text-sm font-medium mb-2">Poste *</label>
+                        <input
+                            type="text"
+                            id="poste"
+                            name="poste"
+                            required
+                            class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
+                            placeholder="Directeur Technique"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="bio" class="block text-sm font-medium mb-2">Biographie *</label>
+                        <textarea
+                            id="bio"
+                            name="bio"
+                            rows="3"
+                            required
+                            class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none resize-none"
+                            placeholder="Biographie du membre..."
+                        ></textarea>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="photo" class="block text-sm font-medium mb-2">Photo (URL)</label>
+                            <input
+                                type="text"
+                                id="photo"
+                                name="photo"
+                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
+                                placeholder="photo-membre.jpg"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="specialites" class="block text-sm font-medium mb-2">Spécialités (séparées par des virgules)</label>
+                            <input
+                                type="text"
+                                id="specialites"
+                                name="specialites"
+                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
+                                placeholder="IoT, Développement, IA"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="linkedin" class="block text-sm font-medium mb-2">LinkedIn</label>
+                            <input
+                                type="url"
+                                id="linkedin"
+                                name="linkedin"
+                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
+                                placeholder="https://linkedin.com/in/..."
+                            >
+                        </div>
+
+                        <div>
+                            <label for="github" class="block text-sm font-medium mb-2">GitHub</label>
+                            <input
+                                type="url"
+                                id="github"
+                                name="github"
+                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
+                                placeholder="https://github.com/..."
+                            >
+                        </div>
+
+                        <div>
+                            <label for="twitter" class="block text-sm font-medium mb-2">Twitter</label>
+                            <input
+                                type="url"
+                                id="twitter"
+                                name="twitter"
+                                class="input-focus w-full px-4 py-3 bg-tech-dark/50 border-2 border-gray-600 rounded-lg text-white focus:outline-none"
+                                placeholder="https://twitter.com/..."
+                            >
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button type="submit" class="flex-1 py-3 bg-gradient-to-r from-tech-blue to-tech-cyan text-white font-semibold rounded-lg hover:scale-105 transition-transform tech-glow focus:outline-none">
+                            Sauvegarder
+                        </button>
+                        <button type="button" onclick="closeModal()" class="flex-1 py-3 border-2 border-gray-600 text-gray-400 font-semibold rounded-lg hover:border-gray-500 hover:text-white transition-colors">
+                            Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="modal bg-tech-gray rounded-2xl max-w-md w-full">
+            <div class="p-8">
+                <h2 class="text-2xl font-bold mb-4">Confirmer la suppression</h2>
+                <p class="text-gray-400 mb-6">Êtes-vous sûr de vouloir supprimer ce membre ? Cette action est irréversible.</p>
+                <div class="flex space-x-4">
+                    <button onclick="confirmDelete()" class="flex-1 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
+                        Supprimer
+                    </button>
+                    <button onclick="closeDeleteModal()" class="flex-1 py-3 border-2 border-gray-600 text-gray-400 font-semibold rounded-lg hover:border-gray-500 hover:text-white transition-colors">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMembreId = null;
+        let deleteMembreId = null;
+
+        // Display admin email
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user && user.email) {
+                const adminEmailEl = document.getElementById('adminEmail');
+                if(adminEmailEl) adminEmailEl.textContent = user.email;
+            }
+        });
+
+        // Load team
+        function loadEquipe() {
+            const equipe = AdminData.get('equipe');
+            const container = document.getElementById('equipeList');
+
+            if (equipe.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-center py-8 col-span-full">Aucun membre trouvé</p>';
+                return;
+            }
+
+            container.innerHTML = equipe.map(membre => `
+                <div class="card-hover bg-tech-dark/50 p-6 rounded-2xl">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold mb-2">${membre.prenom} ${membre.nom}</h3>
+                            <p class="text-tech-cyan mb-3">${membre.poste}</p>
+                            <p class="text-gray-400 mb-3 text-sm">${membre.bio.substring(0, 100)}${membre.bio.length > 100 ? '...' : ''}</p>
+                            <div class="text-sm text-gray-500">
+                                Spécialités: ${Array.isArray(membre.specialites) ? membre.specialites.join(', ') : membre.specialites || 'N/A'}
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="editMembre(${membre.id})" class="p-2 text-tech-cyan hover:bg-tech-cyan/20 rounded-lg transition-colors">
+                                ✏️
+                            </button>
+                            <button onclick="deleteMembre(${membre.id})" class="p-2 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open add modal
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = 'Ajouter un membre';
+            document.getElementById('membreForm').reset();
+            document.getElementById('membreId').value = '';
+            document.getElementById('membreModal').classList.remove('hidden');
+            gsap.fromTo('.modal', { opacity: 0, scale: 0.8, y: 50 }, { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: 'power2.out' });
+        }
+
+        // Edit member
+        function editMembre(id) {
+            const membre = AdminData.getById('equipe', id);
+            if (!membre) return;
+
+            document.getElementById('modalTitle').textContent = 'Modifier le membre';
+            document.getElementById('membreId').value = membre.id;
+            document.getElementById('nom').value = membre.nom;
+            document.getElementById('prenom').value = membre.prenom;
+            document.getElementById('poste').value = membre.poste;
+            document.getElementById('bio').value = membre.bio;
+            document.getElementById('photo').value = membre.photo || '';
+            document.getElementById('specialites').value = Array.isArray(membre.specialites) ? membre.specialites.join(', ') : membre.specialites || '';
+
+            // Social media
+            const reseaux = membre.reseaux_sociaux || {};
+            document.getElementById('linkedin').value = reseaux.linkedin || '';
+            document.getElementById('github').value = reseaux.github || '';
+            document.getElementById('twitter').value = reseaux.twitter || '';
+
+            document.getElementById('membreModal').classList.remove('hidden');
+            gsap.fromTo('.modal', { opacity: 0, scale: 0.8, y: 50 }, { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: 'power2.out' });
+        }
+
+        // Close modal
+        function closeModal() {
+            gsap.to('.modal', {
+                opacity: 0,
+                scale: 0.8,
+                y: 50,
+                duration: 0.3,
+                ease: 'power2.in',
+                onComplete: () => {
+                    document.getElementById('membreModal').classList.add('hidden');
+                }
+            });
+        }
+
+        // Delete member
+        function deleteMembre(id) {
+            deleteMembreId = id;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        // Confirm delete
+        function confirmDelete() {
+            if (deleteMembreId) {
+                AdminData.delete('equipe', deleteMembreId);
+                loadEquipe();
+                closeDeleteModal();
+                showNotification('Membre supprimé avec succès', 'success');
+            }
+        }
+
+        // Close delete modal
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            deleteMembreId = null;
+        }
+
+        // Form submission
+        document.getElementById('membreForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const membreData = Object.fromEntries(formData);
+
+            // Process arrays
+            if (membreData.specialites) {
+                membreData.specialites = membreData.specialites.split(',').map(item => item.trim()).filter(item => item);
+            }
+
+            // Process social media
+            membreData.reseaux_sociaux = {
+                linkedin: membreData.linkedin || null,
+                twitter: membreData.twitter || null,
+                github: membreData.github || null,
+                autres: null
+            };
+
+            // Remove individual social fields from main object
+            delete membreData.linkedin;
+            delete membreData.twitter;
+            delete membreData.github;
+
+            if (membreData.id) {
+                // Update
+                AdminData.update('equipe', membreData.id, membreData);
+                showNotification('Membre mis à jour avec succès', 'success');
+            } else {
+                // Add
+                AdminData.add('equipe', membreData);
+                showNotification('Membre ajouté avec succès', 'success');
+            }
+
+            loadEquipe();
+            closeModal();
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            alert(message);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEquipe();
+        });
+    </script>
+</body>
+</html>

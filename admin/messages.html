@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Messages - H-Lab Admin</title>
+    <script src="js/auth-guard.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tech-blue': '#0066FF',
+                        'tech-cyan': '#00FFFF',
+                        'tech-dark': '#0A0F1C',
+                        'tech-gray': '#1A1F2E'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tech-gradient { background: linear-gradient(135deg, #0066FF 0%, #00FFFF 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 102, 255, 0.2); }
+    </style>
+</head>
+<body class="bg-tech-dark text-white">
+    <!-- Navigation -->
+    <nav class="bg-tech-gray border-b border-tech-blue/20">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold tech-gradient bg-clip-text text-transparent">H-Lab Admin</a>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-400" id="adminEmail"></span>
+                <button id="logout-button" class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">Déconnexion</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-tech-gray min-h-screen border-r border-tech-blue/20">
+            <nav class="p-6">
+                <ul class="space-y-2">
+                    <li><a href="index.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">📊 Dashboard</a></li>
+                    <li><a href="messages.html" class="block px-4 py-3 bg-tech-blue/20 text-tech-cyan rounded-lg font-semibold">✉️ Messages</a></li>
+                    <li><a href="videos.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🎥 Vidéos</a></li>
+                    <li><a href="formations.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🎓 Formations</a></li>
+                    <li><a href="produits.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🛍️ Produits</a></li>
+                    <li><a href="partenaires.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🤝 Partenaires</a></li>
+                    <li><a href="temoignages.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">💬 Témoignages</a></li>
+                    <li><a href="projets.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">🚀 Projets</a></li>
+                    <li><a href="equipe.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">👥 Équipe</a></li>
+                    <li><a href="stats.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">📈 Statistiques</a></li>
+                    <li><a href="admin-settings.html" class="block px-4 py-3 hover:bg-tech-blue/10 rounded-lg">⚙️ Contact & Adresse</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Boîte de réception</h1>
+                    <p class="text-gray-400">Messages reçus depuis le formulaire de contact.</p>
+                </div>
+            </div>
+
+            <!-- Messages List -->
+            <div class="bg-tech-gray rounded-2xl p-6">
+                <div id="messagesList" class="space-y-4">
+                    <!-- Messages will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-tech-gray rounded-2xl max-w-md w-full p-8">
+            <h2 class="text-2xl font-bold mb-4">Confirmer la suppression</h2>
+            <p class="text-gray-400 mb-6">Cette action est irréversible.</p>
+            <div class="flex space-x-4">
+                <button onclick="confirmDelete()" class="flex-1 py-3 bg-red-600 text-white font-semibold rounded-lg">Supprimer</button>
+                <button onclick="closeDeleteModal()" class="flex-1 py-3 border-2 border-gray-600 rounded-lg">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://hlab-api.onrender.com/api';
+        const ENDPOINT = '/messages';
+        let allItems = [];
+        let deleteItemId = null;
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            return new Date(dateString).toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' });
+        }
+
+        async function fetchAPI(endpoint, options = {}) {
+            const token = localStorage.getItem('authToken');
+            if (!token) { window.location.href = 'login.html?reason=session_expired'; throw new Error('Session expirée'); }
+            const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+            const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+            if (response.status === 401) { localStorage.removeItem('authToken'); window.location.href = 'login.html?reason=session_expired'; throw new Error('Session expirée'); }
+            if (!response.ok) { const errorData = await response.json().catch(() => ({ message: `Erreur HTTP ${response.status}` })); throw new Error(errorData.message); }
+            return response.status === 204 ? null : response.json();
+        }
+
+        async function loadItems() {
+            try {
+                const result = await fetchAPI(ENDPOINT);
+                allItems = result.data;
+                renderItems();
+            } catch (error) {
+                if (error.message !== 'Session expirée') alert(`Erreur de chargement: ${error.message}`);
+            }
+        }
+
+        function renderItems() {
+            const container = document.getElementById('messagesList');
+
+            if (!allItems || allItems.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-center py-8">Aucun message trouvé</p>';
+                return;
+            }
+
+            container.innerHTML = allItems.map(item => {
+                const isUnread = item.status === 'unread';
+                return `
+                <div id="item-${item.id}" class="card-hover bg-tech-dark/50 p-6 rounded-2xl ${isUnread ? 'border-l-4 border-tech-cyan' : 'border-l-4 border-transparent'}">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-4 mb-3">
+                                <h3 class="text-xl font-bold">${item.name}</h3>
+                                <a href="mailto:${item.email}" class="text-sm text-tech-cyan hover:underline">${item.email}</a>
+                                ${item.company ? `<span class="text-sm text-gray-400">(${item.company})</span>` : ''}
+                            </div>
+                            <p class="text-gray-300 font-semibold mb-2">Sujet: ${item.subject}</p>
+                            <p class="text-gray-400 whitespace-pre-wrap">${item.message}</p>
+                        </div>
+                        <div class="flex flex-col space-y-2 items-end">
+                            <span class="text-xs text-gray-500 mb-2">${formatDate(item.created)}</span>
+                            <button onclick="updateStatus(${item.id}, '${isUnread ? 'read' : 'unread'}')" 
+                                    class="px-3 py-1 text-sm rounded-lg ${isUnread ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}">
+                                ${isUnread ? 'Marquer comme lu' : 'Marquer non lu'}
+                            </button>
+                            <button onclick="openDeleteModal(${item.id})" class="px-3 py-1 text-sm bg-red-500/20 text-red-400 rounded-lg">
+                                Supprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        async function updateStatus(id, newStatus) {
+            try {
+                await fetchAPI(`${ENDPOINT}/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ status: newStatus })
+                });
+                loadItems(); // Re-render the list to show the change
+            } catch (error) {
+                alert(`Erreur: ${error.message}`);
+            }
+        }
+
+        function openDeleteModal(id) {
+            deleteItemId = id;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+        
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            deleteItemId = null;
+        }
+
+        async function confirmDelete() {
+            if (!deleteItemId) return;
+            try {
+                await fetchAPI(`${ENDPOINT}/${deleteItemId}`, { method: 'DELETE' });
+                loadItems();
+            } catch (error) { alert(`Erreur: ${error.message}`); }
+            finally { closeDeleteModal(); }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('adminEmail').textContent = JSON.parse(localStorage.getItem('user'))?.email || 'Admin';
+            loadItems();
+        });
+    </script>
+</body>
+</html>
